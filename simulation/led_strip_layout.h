@@ -5,7 +5,7 @@
 #include <QWidget>
 #include "led_widget.h"
 
-#define DEFAULT_NB_LEDS 5
+#define DEFAULT_NB_LEDS 10
 
 class LedStripLayout : public QVBoxLayout
 {

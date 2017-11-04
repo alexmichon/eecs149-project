@@ -3,6 +3,8 @@
 
 #include <qmath.h>
 
+#include "audio_thread.h"
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -12,14 +14,31 @@ MainWindow::MainWindow(QWidget *parent) :
     //ledStrip = new LedStripWidget(5, this);
 
     QWidget *w = new QWidget(this);
+    QVBoxLayout *vlayout = new QVBoxLayout(w);
+    w->setLayout(vlayout);
 
-    gridLayout = new LedGridLayout(w);
-    w->setLayout(gridLayout);
+    QWidget *w1 = new QWidget(w);
+    gridLayout = new LedGridLayout(w1);
+    w1->setLayout(gridLayout);
+    vlayout->addWidget(w1);
+
+    startButton = new QPushButton("Start", w);
+    startButton->setGeometry(QRect(QPoint(100, 100), QSize(200, 50)));
+    vlayout->addWidget(startButton, 1);
+
+    connect(startButton, SIGNAL (released()), this, SLOT (handleStartButton()));
+
+    stopButton = new QPushButton("Stop", w);
+    stopButton->setGeometry(QRect(QPoint(100, 100), QSize(200, 50)));
+    vlayout->addWidget(stopButton, 1);
+
+    connect(stopButton, SIGNAL (released()), this, SLOT (handleStopButton()));
+
     setCentralWidget(w);
 
-    timer = new QTimer(this);
+    /*timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(timerSlot()));
-    timer->start(100);
+    timer->start(100);*/
 
     for (int i = 0; i < gridLayout->getStripCount(); i++) {
         LedStripLayout * stripLayout = gridLayout->getStrip(i);
@@ -51,4 +70,16 @@ void MainWindow::timerSlot() {
             stripLayout->getLed(j)->setOnColor(color);
         }
     }
+}
+
+
+
+void MainWindow::handleStartButton() {
+    audioThread = new AudioThread(gridLayout, "/home/alex/Berkeley/EECS149-Project/test/test3.mp3");
+    //connect(audioThread, SIGNAL(newGridColors(RGB*, int, int)), gridLayout, SLOT(setColors(RGB*, int, int)));
+    audioThread->start();
+}
+
+void MainWindow::handleStopButton() {
+    audioThread->cancel();
 }

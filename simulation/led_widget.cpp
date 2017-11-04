@@ -11,51 +11,65 @@ LedWidget::LedWidget(QWidget *parent) :
     ledOnPattern = Qt::SolidPattern;
     ledOffPattern = Qt::SolidPattern;
     ledSize = 20;
+
+    timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(repaint()));
+    timer->start(10);
 }
 
 void LedWidget::paintEvent(QPaintEvent *) {
+    mutex.lock();
     QPainter p(this);
     lit ? p.setBrush(QBrush(ledOnColor, ledOnPattern)) : p.setBrush(QBrush(ledOffColor, ledOffPattern));
     p.drawEllipse(0,0,ledSize,ledSize);
+    mutex.unlock();
 }
 
 void LedWidget::switchLedWidget() {
+    mutex.lock();
     lit = !lit;
-    repaint();
+    mutex.unlock();
 }
 
 void LedWidget::setState(bool state) {
+    mutex.lock();
     lit = state;
-    repaint();
+    mutex.unlock();
 }
 
 void LedWidget::toggle() {
+    mutex.lock();
     lit = !lit;
-    repaint();
+    mutex.unlock();
 }
 
 void LedWidget::setOnColor(QColor onColor) {
+    mutex.lock();
     ledOnColor = onColor;
-    repaint();
+    mutex.unlock();
 }
 
 void LedWidget::setOffColor(QColor offColor) {
+    mutex.lock();
     ledOffColor = offColor;
-    repaint();
+    mutex.unlock();
 }
 
 void LedWidget::setOnPattern(Qt::BrushStyle onPattern) {
+    mutex.lock();
     ledOnPattern = onPattern;
-    repaint();
+    mutex.unlock();
 }
 
 void LedWidget::setOffPattern(Qt::BrushStyle offPattern) {
+    mutex.lock();
     ledOffPattern = offPattern;
-    repaint();
+    mutex.unlock();
 }
 
 void LedWidget::setLedSize(int size) {
+    mutex.lock();
     ledSize = size;
     setFixedSize(size + 10, size + 10);
-    repaint();
+    mutex.unlock();
 }

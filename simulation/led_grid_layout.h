@@ -3,6 +3,7 @@
 
 #include <QHBoxLayout>
 #include "led_strip_layout.h"
+#include "../src/audio/audio.h"
 
 #define DEFAULT_NB_STRIPS 5
 
@@ -17,8 +18,10 @@ public:
     LedStripLayout * getStrip(int index);
     LedWidget * getLed(int strip, int led);
 
-private:
+public slots:
+    void setColors(RGB*, int, int);
 
+private:
     int _nStrips;
 
 };

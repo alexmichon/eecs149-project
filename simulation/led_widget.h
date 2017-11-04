@@ -1,6 +1,8 @@
 #ifndef LED_WIDGET_H
 #define LED_WIDGET_H
 
+#include <QMutex>
+#include <QTimer>
 #include <QWidget>
 
 class LedWidget: public QWidget {
@@ -30,6 +32,9 @@ private:
     Qt::BrushStyle ledOnPattern;
     Qt::BrushStyle ledOffPattern;
     int ledSize;
+
+    QMutex mutex;
+    QTimer *timer;
 };
 
 #endif // LED_WIDGET_H
