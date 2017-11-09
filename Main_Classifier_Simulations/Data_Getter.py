@@ -1,6 +1,7 @@
 """This file provides methods for getting the test data."""
 
 import csv
+import numpy as np
 
 class Config(object):
     """
@@ -17,7 +18,7 @@ class Config(object):
 
 
 def get_data_matrix(file_path):
-    print("Getting Data...")
+    print("Getting Data From " + file_path + " ...")
 
     config = Config(5, 4)
     result_matrix = []
@@ -57,9 +58,7 @@ def get_data_matrix(file_path):
                 # Empty line, which means the data will change to another batch
                 current_test_row_index = 0
                 buffer = []
+
     testfile.close()
 
-    return result_matrix
-
-for item in get_data_matrix('TestData/left'):
-    print(item)
+    return np.array(result_matrix).astype(np.float)
