@@ -19,8 +19,6 @@ class DimensionReduction(object):
     def pca_3D_data(self):
         return PCA(n_components=3).fit(self.X).transform(self.X)
 
-
-
 def main():
     # Get Data
     data_getter = TestDataGetter(5, 4)

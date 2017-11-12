@@ -13,6 +13,9 @@ cmap_light = ListedColormap(['#FFAAAA', '#AAFFAA', '#AAAAFF'])
 cmap_bold = ListedColormap(['#FF0000', '#00FF00', '#0000FF'])
 
 def plot_kNN(X, y, n_neighbors=10, h=0.02):
+    # For sake of Integrity, we show two methods here, but in practice, one is enough
+    # And that one would probably be 'distance'
+
     for weights in ['uniform', 'distance']:
         # we create an instance of Neighbours Classifier and fit the data.
         clf = neighbors.KNeighborsClassifier(n_neighbors, weights=weights)
@@ -33,12 +36,11 @@ def plot_kNN(X, y, n_neighbors=10, h=0.02):
         plt.pcolormesh(xx, yy, Z, cmap=cmap_light)
 
         # Plot also the training points
-        plt.scatter(X[:, 0], X[:, 1], c=y, cmap=cmap_bold,
-                    edgecolor='k', s=20)
+        plt.scatter(X[:, 0], X[:, 1], c=y, cmap=cmap_bold, edgecolor='k', s=20)
         plt.xlim(xx.min(), xx.max())
         plt.ylim(yy.min(), yy.max())
-        plt.title("3-Class classification (k = %i, weights = '%s')" % (n_neighbors, weights))
 
+        plt.title("3-Class classification (k = %i, weights = '%s')" % (n_neighbors, weights))
         plt.show()
 
 
