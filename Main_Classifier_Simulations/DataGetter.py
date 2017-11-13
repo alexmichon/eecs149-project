@@ -97,3 +97,11 @@ class TestDataGetter(object):
         return np.array(result_matrix).astype(np.float)
 
 
+def main():
+    # Get Data
+    data_getter = TestDataGetter(5, 3)
+    print(data_getter.get_x_data())
+    print(data_getter.get_y_data())
+
+if __name__ == "__main__":
+    main()
