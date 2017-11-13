@@ -30,7 +30,7 @@ def main():
     X_lda_2d = dimred.lda_2D_data()
 
     # Draw Graphs
-    plot_2D_scatter(X_lda_2d, y, '2D-LDA of Three Basic Gestures')
+    plot_gst_clf_scatter_2D(X_lda_2d, y, '2D-LDA of Three Basic Gestures')
 
 if __name__ == "__main__":
     # stuff only to run when not called via 'import' here
