@@ -36,7 +36,6 @@ class TestDataGetter(object):
 
         return X
 
-
     def get_y_data(self):
         y = []
         for i in range(self.X_left.shape[0]):
@@ -57,51 +56,22 @@ class TestDataGetter(object):
         result_matrix = []
 
         with open(file_path, newline='') as testfile:
-            current_batch_index = 0
-            current_test_row_index = 0
-            current_new_data_size = 0
             buffer = [] # Store the overlap data
             reader = csv.reader(testfile, delimiter=',')
+
             for row in reader:
                 if row:
                     # Not a empty line, which means it still comes from the same batch of sample
-                    if current_test_row_index < self.config.overlap_size:
-                        buffer.append(row[:-1])
-                    else:
-                        if current_new_data_size == self.config.new_data_size - 1:
-                            buffer.append(row[:-1])
-
-                            # Output the data from buffer to result matrix
-                            result_matrix.append([])
-                            for sample in buffer:
-                                result_matrix[current_batch_index] += sample
-                            current_batch_index += 1
-
-                            # Get rid of the useless data, only preserve the overlap data
-                            buffer = buffer[self.config.new_data_size:]
-
-                            # Re-initial the new_data_size
-                            current_new_data_size = 0
-                        else:
-                            buffer.append(row[:-1])
-                            current_new_data_size += 1
-
-                    current_test_row_index += 1
+                    buffer.append(row[:-1])
+                    if len(buffer) == self.config.batch_size:
+                        result_matrix.append([])
+                        for sample in buffer:
+                            result_matrix[-1] += sample
+                        buffer = buffer[self.config.new_data_size:]
                 else:
                     # Empty line, which means the data will change to another batch
-                    current_test_row_index = 0
                     buffer = []
 
         testfile.close()
 
         return np.array(result_matrix).astype(np.float)
-
-
-def main():
-    # Get Data
-    data_getter = TestDataGetter(5, 3)
-    print(data_getter.get_x_data())
-    print(data_getter.get_y_data())
-
-if __name__ == "__main__":
-    main()
