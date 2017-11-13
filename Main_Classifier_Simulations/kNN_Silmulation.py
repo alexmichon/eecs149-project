@@ -54,9 +54,8 @@ def main():
     dimred = DimensionReduction(X, y)
     X_lda_2d = dimred.lda_2D_data()
 
-    # kNN Plotter
+    # GPC Plotter
     plot_kNN(X_lda_2d, y)
 
 if __name__ == "__main__":
-    # stuff only to run when not called via 'import' here
     main()
