@@ -2,6 +2,7 @@
 
 import csv
 import numpy as np
+import random
 
 
 class Config(object):
@@ -95,3 +96,29 @@ class TestDataGetter(object):
         testfile.close()
 
         return np.array(result_matrix).astype(np.float)
+
+
+class DataSpliter(object):
+    """
+    This is the helper class to split the data into 3 parts:
+    1. training data - 50%
+    2. evaluation data - 20%
+    3. testing data - 30%
+    """
+    def __init__(self, X, y):
+        if len(X) != len(y):
+            raise ValueError("X and y must have the same size")
+        self.size = len(X)
+        composite = list(zip(X, y))
+        random.shuffle(composite)
+        self.X, self.y = zip(*composite)
+        self.X = np.array(self.X)
+        self.y = np.array(self.y)
+    def get_training_set(self):
+        return self.X[:int(self.size * .5)], self.y[:int(self.size * .5)]
+
+    def get_evaluation_set(self):
+        return self.X[self.size * .5 : self.size * .7], self.y[self.size * .5 : self.size * .7]
+
+    def get_testing_set(self):
+        return self.X[self.size * .7:], self.y[self.size * .7:]
