@@ -44,34 +44,30 @@ def plot_kNN(X, y, n_neighbors=10, h=0.02):
         plt.title("3-Class classification (k = %i, weights = '%s')" % (n_neighbors, weights))
         plt.show()
 
-def tune_kNN(X, y):
+def tune_kNN(X_train, y_train, X_tune, y_tune, max_k=50):
     """
     This function is used to tune the hyperprameter K of K-NN to be optimal
 
     :param X: all the data whose dimensionality has been reducted to 2
     :param y: the target array
+    :param max_k: the max k in k-NN that should be touched
     """
     for weights in ['uniform', 'distance']:
-        # Shuffle the data and split it
-        spliter = DataSpliter(X, y, 0.8, 0.2, 0.2)
-        X_training, y_training = spliter.get_training_set()
-        X_tune, y_tune = spliter.get_evaluation_set()
-
         training_errors = []
         tuning_errors = []
-        k_list = list(range(1, 50))
+        k_list = list(range(1, max_k))
 
         plt.figure()
-        for k in range(1, 50):
+        for k in range(1, max_k):
             # We create an instance of Neighbours Classifier and fit the data.
             clf = neighbors.KNeighborsClassifier(k, weights=weights)
-            clf.fit(X_training, y_training)
+            clf.fit(X_train, y_train)
 
-            Z_training = clf.predict(X_training)
-            Z_tuning = clf.predict(X_tune)
+            Z_train = clf.predict(X_train)
+            Z_tune = clf.predict(X_tune)
 
-            training_errors.append(np.mean(Z_training != y_training))
-            tuning_errors.append(np.mean(Z_tuning != y_tune))
+            training_errors.append(np.mean(Z_train != y_train))
+            tuning_errors.append(np.mean(Z_tune != y_tune))
 
         plt.plot(k_list, training_errors, linestyle='--', color='navy', label='training error')
         plt.plot(k_list, tuning_errors, linestyle='-', color='turquoise', label='tuning error')
@@ -80,6 +76,15 @@ def tune_kNN(X, y):
         plt.legend(loc='upper right')
         plt.title("Effects of k in k neariest neighbours - %s" % weights)
         plt.show()
+
+def test_kNN(X_train, y_train, X_test, y_test, k, weight='uniform'):
+    clf = neighbors.KNeighborsClassifier(k, weights=weight)
+    clf.fit(X_train, y_train)
+
+    Z_test = clf.predict(X_test)
+
+    return np.mean(Z_test != y_test)
+
 
 def main():
     # Get Data
@@ -91,8 +96,16 @@ def main():
     dimred = DimensionReduction(X, y)
     X_lda_2d = dimred.lda_2D_data()
 
-    # K-NN Tuner
-    tune_kNN(X_lda_2d, y)
+    # Shuffle the data and split it
+    spliter = DataSpliter(X, y, 0.8, 0.2, 0.2)
+    X_train, y_train = spliter.get_training_set()
+    X_tune, y_tune = spliter.get_evaluation_set()
+    X_test, y_test = spliter.get_testing_set()
+
+    # K-NN Tuner and Tester
+    tune_kNN(X_train, y_train, X_tune, y_tune)
+    test_err = test_kNN(X_train, y_train, X_test, y_test)
+    print("Final Test Error: ", test_err)
 
 if __name__ == "__main__":
     main()
