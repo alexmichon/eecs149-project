@@ -1,5 +1,5 @@
 from DataGetter import TestDataGetter
-from PCA_LDA_Simulation import DimensionReduction
+from LDA_PCA_FA_Simulation import DimensionReduction
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.gaussian_process import GaussianProcessClassifier
@@ -63,7 +63,7 @@ def main():
     X_lda_2d = dimred.lda_2D_data()
 
     # GPC Plotter
-    plot_GPC(X_lda_2d, y, 0.125)
+    plot_GPC(X_lda_2d, y, 5)
 
 if __name__ == "__main__":
     main()

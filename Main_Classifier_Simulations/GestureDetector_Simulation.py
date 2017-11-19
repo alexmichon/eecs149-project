@@ -1,5 +1,5 @@
 from DataGetter import TestDataGetter
-from PCA_LDA_Simulation import DimensionReduction
+from LDA_PCA_FA_Simulation import DimensionReduction
 from Plotter import plot_gst_detector_2D
 
 def main():
@@ -10,10 +10,10 @@ def main():
 
     # Dimensionality Reduction
     dimred = DimensionReduction(X, y)
-    X_lda_2d = dimred.pca_2D_data()
+    X_lda_2d = dimred.lda_2D_data()
 
     # Draw Graphs
-    plot_gst_detector_2D(X_lda_2d, y, '2D-PCA of Gestures Detector')
+    plot_gst_detector_2D(X_lda_2d, y, '2D-LDA of Gestures Detector')
 
 if __name__ == "__main__":
     # stuff only to run when not called via 'import' here

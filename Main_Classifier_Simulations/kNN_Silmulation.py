@@ -1,7 +1,7 @@
 # This simulation is designated to give a graphical intuition to KNN
 # Basically from Scikit-learn
 from DataGetter import TestDataGetter
-from PCA_LDA_Simulation import DimensionReduction
+from LDA_PCA_FA_Simulation import DimensionReduction
 from DataGetter import DataSpliter
 
 import numpy as np
@@ -13,13 +13,13 @@ from sklearn import neighbors, datasets
 cmap_light = ListedColormap(['#FFAAAA', '#AAFFAA', '#AAAAFF'])
 cmap_bold = ListedColormap(['#FF0000', '#00FF00', '#0000FF'])
 
-def plot_kNN(X, y, n_neighbors=10, h=0.02):
+def plot_kNN(X, y, k_neighbors=13, h=0.02):
     # For sake of Integrity, we show two methods here, but in practice, one is enough
-    # And that one would probably be 'distance'
+    # And that one would probably be 'uniform'
 
     for weights in ['uniform', 'distance']:
         # we create an instance of Neighbours Classifier and fit the data.
-        clf = neighbors.KNeighborsClassifier(n_neighbors, weights=weights)
+        clf = neighbors.KNeighborsClassifier(k_neighbors, weights=weights)
         clf.fit(X, y)
 
         # Plot the decision boundary. For that, we will assign a color to each
@@ -41,15 +41,17 @@ def plot_kNN(X, y, n_neighbors=10, h=0.02):
         plt.xlim(xx.min(), xx.max())
         plt.ylim(yy.min(), yy.max())
 
-        plt.title("3-Class classification (k = %i, weights = '%s')" % (n_neighbors, weights))
+        plt.title("3-Class classification (k = %i, weights = '%s')" % (k_neighbors, weights))
         plt.show()
 
 def tune_kNN(X_train, y_train, X_tune, y_tune, max_k=50):
     """
     This function is used to tune the hyperprameter K of K-NN to be optimal
 
-    :param X: all the data whose dimensionality has been reducted to 2
-    :param y: the target array
+    :param X_train: all the training data whose dimensionality has been reducted to 2
+    :param y_train: the training target array
+    :param X_tune: all the tuning data whose dimensionality has been reducted to 2
+    :param y_tune: the tuning target array
     :param max_k: the max k in k-NN that should be touched
     """
     for weights in ['uniform', 'distance']:
@@ -96,16 +98,20 @@ def main():
     dimred = DimensionReduction(X, y)
     X_lda_2d = dimred.lda_2D_data()
 
-    # Shuffle the data and split it
-    spliter = DataSpliter(X, y, 0.8, 0.2, 0.2)
-    X_train, y_train = spliter.get_training_set()
-    X_tune, y_tune = spliter.get_evaluation_set()
-    X_test, y_test = spliter.get_testing_set()
+    # # K-NN Plotter
+    # plot_kNN(X_lda_2d, y)
 
-    # K-NN Tuner and Tester
-    tune_kNN(X_train, y_train, X_tune, y_tune)
-    test_err = test_kNN(X_train, y_train, X_test, y_test)
-    print("Final Test Error: ", test_err)
+    # # Shuffle the data and split it
+    # spliter = DataSpliter(X_lda_2d, y, 0.4, 0.4, 0.2)
+    # X_train, y_train = spliter.get_training_set()
+    # X_tune, y_tune = spliter.get_evaluation_set()
+    # # K-NN Tuner
+    # tune_kNN(X_train, y_train, X_tune, y_tune)
+
+    # # K-NN Tester
+    # X_test, y_test = spliter.get_testing_set()
+    # test_err = test_kNN(X_train, y_train, X_test, y_test, 10)
+    # print("Final Test Error: ", test_err)
 
 if __name__ == "__main__":
     main()
