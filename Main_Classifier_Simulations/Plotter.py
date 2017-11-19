@@ -15,8 +15,6 @@ def plot_gst_clf_scatter_2D(X, y, title):
     plt.show()
 
 def plot_gst_clf_scatter_3D(X, y, title):
-    print('Explained variance ratio (first three components): %s' % str(pca.explained_variance_ratio_))
-
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
