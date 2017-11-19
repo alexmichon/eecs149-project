@@ -2,6 +2,7 @@
 # Basically from Scikit-learn
 from DataGetter import TestDataGetter
 from PCA_LDA_Simulation import DimensionReduction
+from DataGetter import DataSpliter
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -43,6 +44,42 @@ def plot_kNN(X, y, n_neighbors=10, h=0.02):
         plt.title("3-Class classification (k = %i, weights = '%s')" % (n_neighbors, weights))
         plt.show()
 
+def tune_kNN(X, y):
+    """
+    This function is used to tune the hyperprameter K of K-NN to be optimal
+
+    :param X: all the data whose dimensionality has been reducted to 2
+    :param y: the target array
+    """
+    for weights in ['uniform', 'distance']:
+        # Shuffle the data and split it
+        spliter = DataSpliter(X, y, 0.8, 0.2, 0.2)
+        X_training, y_training = spliter.get_training_set()
+        X_tune, y_tune = spliter.get_evaluation_set()
+
+        training_errors = []
+        tuning_errors = []
+        k_list = list(range(1, 50))
+
+        plt.figure()
+        for k in range(1, 50):
+            # We create an instance of Neighbours Classifier and fit the data.
+            clf = neighbors.KNeighborsClassifier(k, weights=weights)
+            clf.fit(X_training, y_training)
+
+            Z_training = clf.predict(X_training)
+            Z_tuning = clf.predict(X_tune)
+
+            training_errors.append(np.mean(Z_training != y_training))
+            tuning_errors.append(np.mean(Z_tuning != y_tune))
+
+        plt.plot(k_list, training_errors, linestyle='--', color='navy', label='training error')
+        plt.plot(k_list, tuning_errors, linestyle='-', color='turquoise', label='tuning error')
+        plt.xlabel('k in k-NN')
+        plt.ylabel('error rate')
+        plt.legend(loc='upper right')
+        plt.title("Effects of k in k neariest neighbours - %s" % weights)
+        plt.show()
 
 def main():
     # Get Data
@@ -54,8 +91,8 @@ def main():
     dimred = DimensionReduction(X, y)
     X_lda_2d = dimred.lda_2D_data()
 
-    # GPC Plotter
-    plot_kNN(X_lda_2d, y)
+    # K-NN Tuner
+    tune_kNN(X_lda_2d, y)
 
 if __name__ == "__main__":
     main()
