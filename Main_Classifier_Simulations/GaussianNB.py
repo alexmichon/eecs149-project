@@ -1,125 +1,122 @@
-import data_parser
-from sklearn.naive_bayes import GaussianNB
+# This simulation is designated to give a graphical intuition to KNN
+# Basically from Scikit-learn
+from DataGetter import TestDataGetter
+from LDA_PCA_FA_Simulation import DimensionReduction
+from DataGetter import DataSpliter
+
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap
+from sklearn import neighbors, datasets
 
-from sklearn.model_selection import ShuffleSplit
-from sklearn.model_selection import learning_curve
-from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
 
-from mlxtend.plotting import plot_decision_regions
+# Create color maps
+cmap_light = ListedColormap(['#FFAAAA', '#AAFFAA', '#AAAAFF'])
+cmap_bold = ListedColormap(['#FF0000', '#00FF00', '#0000FF'])
 
-import random
+def plot_kNN(X, y, k_neighbors=13, h=0.02):
+    # For sake of Integrity, we show two methods here, but in practice, one is enough
+    # And that one would probably be 'uniform'
+
+    for weights in ['uniform', 'distance']:
+        # we create an instance of Neighbours Classifier and fit the data.
+        clf = GaussianNB()
+        clf.fit(X, y)
+
+        # Plot the decision boundary. For that, we will assign a color to each
+        # point in the mesh [x_min, x_max]x[y_min, y_max].
+        x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+        y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+
+        xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
+        Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
+
+        # Put the result into a color plot
+        Z = Z.reshape(xx.shape)
+
+        plt.figure()
+        plt.pcolormesh(xx, yy, Z, cmap=cmap_light)
+
+        # Plot also the training points
+        plt.scatter(X[:, 0], X[:, 1], c=y, cmap=cmap_bold, edgecolor='k', s=20)
+        plt.xlim(xx.min(), xx.max())
+        plt.ylim(yy.min(), yy.max())
+
+        plt.title("3-Class classification (k = %i, weights = '%s')" % (k_neighbors, weights))
+        plt.show()
+
+def tune_kNN(X_train, y_train, X_tune, y_tune, max_k=50):
+    """
+    This function is used to tune the hyperprameter K of K-NN to be optimal
+
+    :param X_train: all the training data whose dimensionality has been reducted to 2
+    :param y_train: the training target array
+    :param X_tune: all the tuning data whose dimensionality has been reducted to 2
+    :param y_tune: the tuning target array
+    :param max_k: the max k in k-NN that should be touched
+    """
+    for weights in ['uniform', 'distance']:
+        training_errors = []
+        tuning_errors = []
+        k_list = list(range(1, max_k))
+
+        plt.figure()
+        for k in range(1, max_k):
+            # We create an instance of Neighbours Classifier and fit the data.
+            clf = neighbors.KNeighborsClassifier(k, weights=weights)
+            clf.fit(X_train, y_train)
+
+            Z_train = clf.predict(X_train)
+            Z_tune = clf.predict(X_tune)
+
+            training_errors.append(np.mean(Z_train != y_train))
+            tuning_errors.append(np.mean(Z_tune != y_tune))
+
+        plt.plot(k_list, training_errors, linestyle='--', color='navy', label='training error')
+        plt.plot(k_list, tuning_errors, linestyle='-', color='turquoise', label='tuning error')
+        plt.xlabel('k in k-NN')
+        plt.ylabel('error rate')
+        plt.legend(loc='upper right')
+        plt.title("Effects of k in k neariest neighbours - %s" % weights)
+        plt.show()
+
+def test_kNN(X_train, y_train, X_test, y_test, k, weight='uniform'):
+    clf = GaussianNB()
+    clf.fit(X_train, y_train)
+
+    print("Means: \n{0}".format(clf.theta_))
+    print("Varaiances: \n{0}".format(clf.sigma_))
+
+    Z_test = clf.predict(X_test)
+
+    return np.mean(Z_test != y_test)
 
 
-# Loads data 
-# Each line is a sample
-# Params:	test_size: percentage of samples used for testing
-#			random_state: random value to split train and test samples
-def load_data(test_size, random_state):
-	# X are samples, Y are targets
-	X_left, Y_left = data_parser.parse("TestData/left", 0)
-	X_right, Y_right = data_parser.parse("TestData/right", 1)
-	X_stop, Y_stop = data_parser.parse("TestData/stop", 2)
+def main():
+    # Get Data
+    data_getter = TestDataGetter(5, 4)
+    X = data_getter.get_x_data()
+    y = data_getter.get_y_data()
 
-	# Concatentates values from each file
-	X = np.concatenate((X_left, X_right, X_stop))
-	Y = np.concatenate((Y_left, Y_right, Y_stop))
+    # Dimensionality Reduction
+    dimred = DimensionReduction(X, y)
+    X_lda_2d = dimred.lda_2D_data()
 
-	return train_test_split(X, Y, test_size=test_size, random_state=random_state)
+    # # K-NN Plotter
+    # plot_kNN(X_lda_2d, y)
 
+    # # Shuffle the data and split it
+    spliter = DataSpliter(X_lda_2d, y, 0.5, 0.3, 0.2)
+    X_train, y_train = spliter.get_training_set()
+    # X_tune, y_tune = spliter.get_evaluation_set()
+    # # K-NN Tuner
+    # tune_kNN(X_train, y_train, X_tune, y_tune)
 
-# Loads data by batches
-# Params:	batch_size: number of lines to create one sample
-#			test_size: percentage of samples used for testing
-#			random_state: random value to split train and test samples
-def load_batches(batch_size, test_size, random_state):
-	# X are samples, Y are targets
-	X_left, Y_left = data_parser.parse_batch("TestData/left", 0, batch_size)
-	X_right, Y_right = data_parser.parse_batch("TestData/right", 1, batch_size)
-	X_stop, Y_stop = data_parser.parse_batch("TestData/stop", 2, batch_size)
-
-	# Concatentates values from each file
-	X = np.concatenate((X_left, X_right, X_stop))
-	Y = np.concatenate((Y_left, Y_right, Y_stop))
-
-	return train_test_split(X, Y, test_size=test_size, random_state=random_state)
-
-
-# Plot learning curbe
-# Params: 	estimator: model (here GaussianNB)
-#			title: title of the graph
-#			X: samples
-#			Y: targets
-#			ylim: limit of the Y axis
-#			cv: cross-validation generator
-def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None):
-	plt.figure()
-	plt.title(title)
-	if ylim is not None:
-		plt.ylim(ylim)
-	plt.xlabel("Training examples")
-	plt.ylabel("Score")
-	train_size, train_scores, test_scores = learning_curve(estimator, X, y, cv=cv)
-	train_scores_mean = np.mean(train_scores, axis=1)
-	train_scores_std = np.std(train_scores, axis=1)
-	test_scores_mean = np.mean(test_scores, axis=1)
-	test_scores_std = np.std(test_scores, axis=1)
-	plt.grid()
-
-	plt.fill_between(train_size, train_scores_mean - train_scores_std, train_scores_mean + train_scores_std, alpha=0.1, color="r")
-	plt.fill_between(train_size, test_scores_mean - test_scores_std, test_scores_mean + test_scores_std, alpha=0.1, color="g")
-	plt.plot(train_size, train_scores_mean, 'o-', color="r", label="Training score")
-	plt.plot(train_size, test_scores_mean, 'o-', color="g", label="Cross-validation score")
-
-	plt.legend(loc="best")
-	return plt
-
-
-# Test with a given number of rows per sample
-# Returns the score on the test samples
-# Params: 	batch_size: number of lines to create one sample
-def test_batches(batch_size):
-	X_train, X_test, Y_train, Y_test = load_batches(batch_size, 0.3, random.randint(1,100))
-
-	# Train model on train samples
-	clf = GaussianNB()
-	clf.fit(X_train, Y_train.ravel())
-
-	# Test model on test samples
-	return clf.score(X_test, Y_test)
-
+    # # K-NN Tester
+    X_test, y_test = spliter.get_testing_set()
+    test_err = test_kNN(X_train, y_train, X_test, y_test, 13)
+    print("Final Test Error: ", test_err)
 
 if __name__ == "__main__":
-
-	# Test on batch sizes from 1 to 10
-	for i in range(1,11):
-		# Run the test 100 times to get an average value 
-		scores = 0
-		for j in range(100):
-			scores += test_batches(i)
-		print("Batch size: {0}\tScore: {1:.2f}%".format(i, scores))
-
-	'''
-	X_train, X_test, Y_train, Y_test = load_batches(5, 0.3, 42)
-
-	clf = GaussianNB()
-	clf.fit(X_train, Y_train.ravel())
-
-	print("Score: " + str(clf.score(X_test, Y_test)))
-
-
-	title = "GaussianNB"
-	cv = ShuffleSplit(n_splits=100, test_size=0.2, random_state=0)
-	estimator = GaussianNB()
-
-	plot_learning_curve(estimator, title, X_train, Y_train, cv=cv)
-	plt.show()
-
-	filler_feature_values = {}
-	for i in range(2, X_train.shape[1]):
-		filler_feature_values[i] = 2
-
-	plot_decision_regions(X_train, Y_train, clf=clf, filler_feature_values=filler_feature_values)
-	plt.show()
-	'''
+    main()
