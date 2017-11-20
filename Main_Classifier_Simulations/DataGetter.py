@@ -2,6 +2,8 @@
 
 import csv
 import numpy as np
+import random
+
 
 class Config(object):
     """
@@ -16,6 +18,7 @@ class Config(object):
         self.overlap_size = overlap_size
         self.new_data_size = batch_size - overlap_size
 
+
 class TestDataGetter(object):
     """
     Define a helper class to get all the data used for test
@@ -29,16 +32,34 @@ class TestDataGetter(object):
         self.X_left = self.__get_x_data_matrix("TestData/left")
         self.X_right = self.__get_x_data_matrix("TestData/right")
         self.X_stop = self.__get_x_data_matrix("TestData/stop")
-
-    def get_x_data(self):
-
-        X = np.concatenate((self.X_left, self.X_right, self.X_stop))
-
-        return X
+        self.X_none = self.__get_x_data_matrix("TestData/none")
 
 
-    def get_y_data(self):
+    def get_x_data(self, only_gst_data=True):
+        """
+        Get the x data from the data set by requirement set in the init function
+
+        :param only_gst_data: if set to false, then it will return all the data including non-gesture data
+        :return: parsed data matrix
+        """
+        if only_gst_data:
+            return np.concatenate((self.X_left, self.X_right, self.X_stop))
+        else:
+            return np.concatenate((self.X_none, self.X_left, self.X_right, self.X_stop))
+
+    def get_y_data(self, only_gst_data=True):
+        """
+        Get the target/y data from the data set by requirement set in the init function
+
+        :param only_gst_data: if set to false, then it will return all the data including non-gesture data
+        :return: parsed target class array
+        """
         y = []
+
+        if not only_gst_data:
+            for i in range(self.X_none.shape[0]):
+                y.append(-1)
+
         for i in range(self.X_left.shape[0]):
             y.append(0)
         for i in range(self.X_right.shape[0]):
@@ -50,46 +71,26 @@ class TestDataGetter(object):
 
         return y
 
-
     def __get_x_data_matrix(self, file_path):
         print("Getting Data From " + file_path + " ...")
 
         result_matrix = []
 
         with open(file_path, newline='') as testfile:
-            current_batch_index = 0
-            current_test_row_index = 0
-            current_new_data_size = 0
-            buffer = [] # Store the overlap data
+            buffer = []  # Store the overlap data
             reader = csv.reader(testfile, delimiter=',')
+
             for row in reader:
                 if row:
                     # Not a empty line, which means it still comes from the same batch of sample
-                    if current_test_row_index < self.config.overlap_size:
-                        buffer.append(row[:-1])
-                    else:
-                        if current_new_data_size == self.config.new_data_size - 1:
-                            buffer.append(row[:-1])
-
-                            # Output the data from buffer to result matrix
-                            result_matrix.append([])
-                            for sample in buffer:
-                                result_matrix[current_batch_index] += sample
-                            current_batch_index += 1
-
-                            # Get rid of the useless data, only preserve the overlap data
-                            buffer = buffer[self.config.new_data_size:]
-
-                            # Re-initial the new_data_size
-                            current_new_data_size = 0
-                        else:
-                            buffer.append(row[:-1])
-                            current_new_data_size += 1
-
-                    current_test_row_index += 1
+                    buffer.append(row[:-1])
+                    if len(buffer) == self.config.batch_size:
+                        result_matrix.append([])
+                        for sample in buffer:
+                            result_matrix[-1] += sample
+                        buffer = buffer[self.config.new_data_size:]
                 else:
                     # Empty line, which means the data will change to another batch
-                    current_test_row_index = 0
                     buffer = []
 
         testfile.close()
@@ -97,3 +98,37 @@ class TestDataGetter(object):
         return np.array(result_matrix).astype(np.float)
 
 
+class DataSpliter(object):
+    """
+    This is the helper class to split the data into 3 parts:
+    1. training data   - 50% - used to learn model weights
+    2. tuning data - 20% - used to tune hyperparameters, choose among different models
+    3. testing data    - 30% - used as FINAL evaluation of model. Keep in a vault. Run ONCE, at the very end.
+
+    :param X: All feature data
+    :param y: All corresponding target data
+    :param training_p: percentage of training data
+    :param tuning_p: percentage of tuning data
+    :param testing_p: percentage of testing data
+    """
+    def __init__(self, X, y, training_p=.5, tuning_p=.2, testing_p=.3):
+        if len(X) != len(y):
+            raise ValueError("X and y must have the same size")
+        self.size = len(X)
+        composite = list(zip(X, y))
+        random.shuffle(composite)
+        self.X, self.y = zip(*composite)
+        self.X = np.array(self.X)
+        self.y = np.array(self.y)
+
+        self.training_p = training_p
+        self.tuning_p = tuning_p
+        self.testing_p = testing_p
+    def get_training_set(self):
+        return self.X[:int(self.size * self.training_p)], self.y[:int(self.size * self.training_p)]
+
+    def get_evaluation_set(self):
+        return self.X[int(self.size * self.training_p) : int(self.size * (self.training_p + self.tuning_p))], self.y[int(self.size * self.training_p) : int(self.size * (self.training_p + self.tuning_p))]
+
+    def get_testing_set(self):
+        return self.X[int(self.size * (self.training_p + self.tuning_p)):], self.y[int(self.size * (self.training_p + self.tuning_p)):]

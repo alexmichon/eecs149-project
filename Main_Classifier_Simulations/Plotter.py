@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 target_names = ["Left-Gesture", "Right-Gesture", "Stop-Gesture"]
 colors = ['navy', 'turquoise', 'darkorange']
 
-def plot_2D_scatter(X, y, title):
+def plot_gst_clf_scatter_2D(X, y, title):
     plt.figure()
 
     for color, i, target_name in zip(colors, [0, 1, 2], target_names):
@@ -14,9 +14,7 @@ def plot_2D_scatter(X, y, title):
     plt.title(title)
     plt.show()
 
-def plot_3D_scatter(X, y):
-    print('Explained variance ratio (first three components): %s' % str(pca.explained_variance_ratio_))
-
+def plot_gst_clf_scatter_3D(X, y, title):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
@@ -25,4 +23,14 @@ def plot_3D_scatter(X, y):
 
     ax.legend()
     plt.title(title, y=1.08)
+    plt.show()
+
+def plot_gst_detector_2D(X, y, title):
+    plt.figure()
+
+    plt.scatter(X[y == -1, 0], X[y == -1, 1], alpha=.8, color='navy', label="NONE")
+    plt.scatter(X[y >= 0 , 0], X[y >= 0, 1], alpha=.8, color='turquoise', label="GESTURING")
+
+    plt.legend(loc='best', shadow=False, scatterpoints=1)
+    plt.title(title)
     plt.show()
