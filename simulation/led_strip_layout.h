@@ -16,6 +16,9 @@ public:
     int getLedCount();
     LedWidget * getLed(int column);
 
+    void refresh();
+    void enable(bool enabled);
+
 signals:
 
 public slots:

@@ -15,3 +15,17 @@ int LedStripLayout::getLedCount() {
 LedWidget * LedStripLayout::getLed(int column) {
     return (LedWidget*) itemAt(column)->widget();
 }
+
+
+void LedStripLayout::refresh() {
+    for (int i = 0; i < _nLeds; i++) {
+        getLed(i)->repaint();
+    }
+}
+
+
+void LedStripLayout::enable(bool enabled) {
+    for (int i = 0; i < _nLeds; i++) {
+        getLed(i)->setState(enabled);
+    }
+}

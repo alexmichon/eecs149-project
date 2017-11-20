@@ -18,6 +18,9 @@ public:
     LedStripLayout * getStrip(int index);
     LedWidget * getLed(int strip, int led);
 
+    void refresh();
+    void enable(bool enabled);
+
 public slots:
     void setColors(RGB*, int, int);
 

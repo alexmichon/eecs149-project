@@ -21,6 +21,10 @@ SOURCES += main.cpp\
     audio_thread.cpp \
     transform_thread.cpp \
     #my_audioinput.cpp
+    signal_generator.cpp \
+    mainwindow2.cpp \
+    direction_generator.cpp \
+    brake_generator.cpp
 
 HEADERS  += mainwindow.h \
     led_widget.h \
@@ -31,6 +35,13 @@ HEADERS  += mainwindow.h \
     audio_thread.h \
     transform_thread.h \
     #my_audioinput.h
+    signal_generator.h \
+    right_generator.h \
+    mainwindow2.h \
+    ui_mainwindow2.h \
+    left_generator.h \
+    direction_generator.h \
+    brake_generator.h
 
 FORMS    += mainwindow.ui
 
