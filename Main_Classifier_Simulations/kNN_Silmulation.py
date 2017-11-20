@@ -102,16 +102,16 @@ def main():
     # plot_kNN(X_lda_2d, y)
 
     # # Shuffle the data and split it
-    # spliter = DataSpliter(X_lda_2d, y, 0.4, 0.4, 0.2)
-    # X_train, y_train = spliter.get_training_set()
+    spliter = DataSpliter(X_lda_2d, y, 0.5, 0.3, 0.2)
+    X_train, y_train = spliter.get_training_set()
     # X_tune, y_tune = spliter.get_evaluation_set()
     # # K-NN Tuner
     # tune_kNN(X_train, y_train, X_tune, y_tune)
 
     # # K-NN Tester
-    # X_test, y_test = spliter.get_testing_set()
-    # test_err = test_kNN(X_train, y_train, X_test, y_test, 10)
-    # print("Final Test Error: ", test_err)
+    X_test, y_test = spliter.get_testing_set()
+    test_err = test_kNN(X_train, y_train, X_test, y_test, 13)
+    print("Final Test Error: ", test_err)
 
 if __name__ == "__main__":
     main()
