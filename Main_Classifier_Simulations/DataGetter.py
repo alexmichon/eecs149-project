@@ -2,6 +2,7 @@
 
 import csv
 import numpy as np
+import random
 
 
 class Config(object):
@@ -95,3 +96,39 @@ class TestDataGetter(object):
         testfile.close()
 
         return np.array(result_matrix).astype(np.float)
+
+
+class DataSpliter(object):
+    """
+    This is the helper class to split the data into 3 parts:
+    1. training data   - 50% - used to learn model weights
+    2. tuning data - 20% - used to tune hyperparameters, choose among different models
+    3. testing data    - 30% - used as FINAL evaluation of model. Keep in a vault. Run ONCE, at the very end.
+
+    :param X: All feature data
+    :param y: All corresponding target data
+    :param training_p: percentage of training data
+    :param tuning_p: percentage of tuning data
+    :param testing_p: percentage of testing data
+    """
+    def __init__(self, X, y, training_p=.5, tuning_p=.2, testing_p=.3):
+        if len(X) != len(y):
+            raise ValueError("X and y must have the same size")
+        self.size = len(X)
+        composite = list(zip(X, y))
+        random.shuffle(composite)
+        self.X, self.y = zip(*composite)
+        self.X = np.array(self.X)
+        self.y = np.array(self.y)
+
+        self.training_p = training_p
+        self.tuning_p = tuning_p
+        self.testing_p = testing_p
+    def get_training_set(self):
+        return self.X[:int(self.size * self.training_p)], self.y[:int(self.size * self.training_p)]
+
+    def get_evaluation_set(self):
+        return self.X[int(self.size * self.training_p) : int(self.size * (self.training_p + self.tuning_p))], self.y[int(self.size * self.training_p) : int(self.size * (self.training_p + self.tuning_p))]
+
+    def get_testing_set(self):
+        return self.X[int(self.size * (self.training_p + self.tuning_p)):], self.y[int(self.size * (self.training_p + self.tuning_p)):]
