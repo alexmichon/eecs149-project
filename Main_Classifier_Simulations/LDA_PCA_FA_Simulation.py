@@ -1,6 +1,6 @@
-from DataGetter import TestDataGetter
+from Main_Classifier_Simulations.DataGetter import TestDataGetter
 
-from Plotter import *
+from Main_Classifier_Simulations.Plotter import *
 
 from sklearn.decomposition import PCA
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
@@ -22,6 +22,13 @@ class DimensionReduction(object):
 
     def fa_2D_data(self):
         return FactorAnalysis(n_components=2).fit(self.X, self.y).transform(self.X)
+
+def get_LDA(only_gst_data=True):
+    data_getter = TestDataGetter(5, 4)
+    X = data_getter.get_x_data(only_gst_data=only_gst_data)
+    y = data_getter.get_y_data(only_gst_data=only_gst_data) 
+
+    return LinearDiscriminantAnalysis(n_components=2).fit(X, y)
 
 def main():
     # Get Data

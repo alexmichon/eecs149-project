@@ -3,7 +3,7 @@
 import csv
 import numpy as np
 import random
-
+import os
 
 class Config(object):
     """
@@ -29,10 +29,10 @@ class TestDataGetter(object):
 
     def __init__(self, batch_size, overlap_size):
         self.config = Config(batch_size, overlap_size)
-        self.X_left = self.__get_x_data_matrix("TestData/left")
-        self.X_right = self.__get_x_data_matrix("TestData/right")
-        self.X_stop = self.__get_x_data_matrix("TestData/stop")
-        self.X_none = self.__get_x_data_matrix("TestData/none")
+        self.X_left = self.__get_x_data_matrix(os.path.join(os.path.dirname(__file__), "TestData/left"))
+        self.X_right = self.__get_x_data_matrix(os.path.join(os.path.dirname(__file__), "TestData/right"))
+        self.X_stop = self.__get_x_data_matrix(os.path.join(os.path.dirname(__file__), "TestData/stop"))
+        self.X_none = self.__get_x_data_matrix(os.path.join(os.path.dirname(__file__), "TestData/none"))
 
 
     def get_x_data(self, only_gst_data=True):
@@ -76,7 +76,7 @@ class TestDataGetter(object):
 
         result_matrix = []
 
-        with open(file_path, newline='') as testfile:
+        with open(file_path) as testfile:
             buffer = []  # Store the overlap data
             reader = csv.reader(testfile, delimiter=',')
 
