@@ -1,4 +1,5 @@
 from DataGetter import TestDataGetter
+from DataGetter import DataSpliter
 
 from Plotter import *
 
@@ -7,21 +8,22 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.decomposition import FactorAnalysis
 
 class DimensionReduction(object):
-    def __init__(self, X, y):
-        self.X = X
-        self.y = y
+    def __init__(self, X_train, y_train, X_div, dim=2):
+        self.X_train = X_train
+        self.y_train = y_train
+        self.X_div   = X_div
 
-    def lda_2D_data(self):
-        return LinearDiscriminantAnalysis(n_components=2).fit(self.X, self.y).transform(self.X)
+    def lda_data(self):
+        reductor = LinearDiscriminantAnalysis(n_components=dim).fit(self.X_train, self.y_train)
+        return reductor.transform(self.X_train), reductor.transform(self.X_div)
 
-    def pca_2D_data(self):
-        return PCA(n_components=2).fit(self.X).transform(self.X)
-
-    def pca_3D_data(self):
-        return PCA(n_components=3).fit(self.X).transform(self.X)
+    def pca_data(self):
+        reductor = PCA(n_components=dim).fit(self.X_train)
+        return reductor.transform(self.X_train), reductor.transform(self.X_div)
 
     def fa_2D_data(self):
-        return FactorAnalysis(n_components=2).fit(self.X, self.y).transform(self.X)
+        reductor = FactorAnalysis(n_components=dim).fit(self.X_train, self.y_train)
+        return reductor.transform(self.X_train), reductor.transform(self.X_div)
 
 def main():
     # Get Data

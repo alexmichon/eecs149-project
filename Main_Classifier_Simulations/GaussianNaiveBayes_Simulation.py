@@ -17,18 +17,16 @@ def main():
     X = data_getter.get_x_data()
     y = data_getter.get_y_data()
 
-    # Dimensionality Reduction
-    dimred = DimensionReduction(X, y)
-    X_lda_2d = dimred.lda_2D_data()
-
     # Shuffle the data and split it
-    spliter = DataSpliter(X_lda_2d, y, 0.6, 0, 0.4)
+    spliter = DataSpliter(X, y, 0.6, 0, 0.4)
     X_train, y_train = spliter.get_training_set()
-
-    # Tester
     X_test, y_test = spliter.get_testing_set()
-    test_GNB(X_train, y_train, X_test, y_test)
 
+    # Dimensionality Reduction
+    dimred = DimensionReduction(X_train, y_train, X_test)
+    X_reduced_trian, X_reduced_test = dimred.lda_2D_data()
+
+    test_GNB(X_reduced_trian, y_train, X_reduced_test, y_test)
 
 if __name__ == "__main__":
     main()
