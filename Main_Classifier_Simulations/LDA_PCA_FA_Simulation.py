@@ -43,6 +43,7 @@ def main():
     X_lda_2d, _ = dimred.lda_data()
     plot_gst_clf_scatter_2D(X_lda_2d, y_train, '32-LDA of Three Basic Gestures')
 
+
 if __name__ == "__main__":
     # stuff only to run when not called via 'import' here
     main()
