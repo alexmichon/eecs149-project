@@ -9,7 +9,7 @@ def test_GNB(X_train, y_train, X_test, y_test, dim=2):
     y_pred = gnb.fit(X_train, y_train).predict(X_test)
     # print("Number of mislabeled points out of a total %d points : %d"
     #       % (X_test.shape[0], (y_test != y_pred).sum()))
-    print("Dim = %d: Error Rate of GNB classifier: %s%%" % (dim, ((y_test != y_pred).sum()/X_test.shape[0]*100)) )
+    print("Dim = %2d: Error Rate of GNB classifier: %s%%" % (dim, ((y_test != y_pred).sum()/X_test.shape[0]*100)) )
 
 def main():
     # Get Data
@@ -35,7 +35,7 @@ def test_dim():
     y = data_getter.get_y_data()
 
     # Shuffle the data and split it
-    spliter = DataSpliter(X, y, 0.6, 0, 0.4)
+    spliter = DataSpliter(X, y, 0.7, 0, 0.3)
     X_train, y_train = spliter.get_training_set()
     X_test, y_test = spliter.get_testing_set()
 
@@ -43,7 +43,6 @@ def test_dim():
     for i in range(1,31):
         dimred = DimensionReduction(X_train, y_train, X_test, i)
         X_reduced_trian, X_reduced_test = dimred.lda_data()
-
         test_GNB(X_reduced_trian, y_train, X_reduced_test, y_test, i)
 
 if __name__ == "__main__":

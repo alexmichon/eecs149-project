@@ -43,7 +43,20 @@ def main():
     X_lda_2d, _ = dimred.lda_data()
     plot_gst_clf_scatter_2D(X_lda_2d, y_train, '32-LDA of Three Basic Gestures')
 
+def test_explained_variance_LDA():
+    # Get Data
+    data_getter = TestDataGetter(5, 4)
+    X = data_getter.get_x_data()
+    y = data_getter.get_y_data()
+
+    # Shuffle the data and split it
+    spliter = DataSpliter(X, y, 1, 0, 0)
+    X_train, y_train = spliter.get_training_set()
+
+    # Dimensionality Reduction
+    for i in range(1, 31):
+        reductor = LinearDiscriminantAnalysis(n_components=i).fit(X_train, y_train)
+        print("Dim = %2d: explained variance ratio:" % i, sum(reductor.explained_variance_ratio_))
 
 if __name__ == "__main__":
-    # stuff only to run when not called via 'import' here
-    main()
+    test_explained_variance_LDA()
