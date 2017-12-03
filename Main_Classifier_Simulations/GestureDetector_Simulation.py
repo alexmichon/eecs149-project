@@ -23,22 +23,19 @@ def main():
     X = data_getter.get_x_data(False)
     y = data_getter.get_y_data(False)
 
-    # Dimensionality Reduction
-    dimred = DimensionReduction(X, y)
-    X_lda_2d = dimred.lda_2D_data()
-
     # Data Spliter
-    spliter = DataSpliter(X_lda_2d, y, 0.6, 0, 0.4)
+    spliter = DataSpliter(X, y, 0.6, 0, 0.4)
     X_train, y_train = spliter.get_training_set()
     X_test, y_test = spliter.get_testing_set()
 
+    # Dimensionality Reduction
+    dimred = DimensionReduction(X_train, y_train, X_test)
+    X_reduced_train, X_reduced_test = dimred.lda_data()
+
     # Gaussian Naive Bayes Classifier
 
-    gnb_detector(X_train, y_train, X_test, y_test)
-    lda_detector(X_train, y_train, X_test, y_test)
-
-    # # Draw Graphs
-    # plot_gst_detector_2D(X_lda_2d, y, '2D-LDA of Gestures Detector')
+    gnb_detector(X_reduced_train, y_train, X_reduced_test, y_test)
+    lda_detector(X_reduced_train, y_train, X_reduced_test, y_test)
 
 if __name__ == "__main__":
     # stuff only to run when not called via 'import' here

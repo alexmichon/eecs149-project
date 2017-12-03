@@ -24,7 +24,7 @@ def main():
 
     # Dimensionality Reduction
     dimred = DimensionReduction(X_train, y_train, X_test)
-    X_reduced_trian, X_reduced_test = dimred.lda_2D_data()
+    X_reduced_trian, X_reduced_test = dimred.lda_data()
 
     test_GNB(X_reduced_trian, y_train, X_reduced_test, y_test)
 

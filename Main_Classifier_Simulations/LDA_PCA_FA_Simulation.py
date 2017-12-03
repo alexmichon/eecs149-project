@@ -12,17 +12,18 @@ class DimensionReduction(object):
         self.X_train = X_train
         self.y_train = y_train
         self.X_div   = X_div
+        self.dim     = dim
 
     def lda_data(self):
-        reductor = LinearDiscriminantAnalysis(n_components=dim).fit(self.X_train, self.y_train)
+        reductor = LinearDiscriminantAnalysis(n_components=self.dim).fit(self.X_train, self.y_train)
         return reductor.transform(self.X_train), reductor.transform(self.X_div)
 
     def pca_data(self):
-        reductor = PCA(n_components=dim).fit(self.X_train)
+        reductor = PCA(n_components=self.dim).fit(self.X_train)
         return reductor.transform(self.X_train), reductor.transform(self.X_div)
 
     def fa_2D_data(self):
-        reductor = FactorAnalysis(n_components=dim).fit(self.X_train, self.y_train)
+        reductor = FactorAnalysis(n_components=self.dim).fit(self.X_train, self.y_train)
         return reductor.transform(self.X_train), reductor.transform(self.X_div)
 
 def main():
@@ -31,12 +32,16 @@ def main():
     X = data_getter.get_x_data()
     y = data_getter.get_y_data()
 
+    # Shuffle the data and split it
+    spliter = DataSpliter(X, y, 1, 0, 0)
+    X_train, y_train = spliter.get_training_set()
+
     # Dimensionality Reduction
-    dimred = DimensionReduction(X, y)
+    dimred = DimensionReduction(X_train, y_train, X_train)
 
     # Draw LDA Graphs
-    X_lda_2d = dimred.lda_2D_data()
-    plot_gst_clf_scatter_2D(X_lda_2d, y, '3D-LDA of Three Basic Gestures')
+    X_lda_2d, _ = dimred.lda_data()
+    plot_gst_clf_scatter_2D(X_lda_2d, y_train, '32-LDA of Three Basic Gestures')
 
 if __name__ == "__main__":
     # stuff only to run when not called via 'import' here
