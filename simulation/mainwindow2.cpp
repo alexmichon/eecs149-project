@@ -5,6 +5,9 @@
 #include "right_generator.h"
 #include "brake_generator.h"
 
+#include "arduino_serial.h"
+#include "music_led_converter.h"
+
 MainWindow2::MainWindow2(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow2)
@@ -16,7 +19,7 @@ MainWindow2::MainWindow2(QWidget *parent) :
     w->setLayout(vlayout);
 
     QWidget *w1 = new QWidget(w);
-    gridLayout = new LedGridLayout(w1, 10, 10);
+    gridLayout = new LedGridLayout(w1, 8, 8);
     w1->setLayout(gridLayout);
     vlayout->addWidget(w1);
 
@@ -42,6 +45,14 @@ MainWindow2::MainWindow2(QWidget *parent) :
     connect(rightButton, SIGNAL (released()), this, SLOT (handleRightButton()));
     connect(brakeButton, SIGNAL (released()), this, SLOT (handleBrakeButton()));
     connect(stopButton, SIGNAL (released()), this, SLOT (handleStopButton()));
+
+
+    MusicLedConverter *converter = new MusicLedConverter();
+
+    ArduinoSerial *ARDUINO = new ArduinoSerial("/dev/ttyACM0", 115200, converter);
+    ARDUINO->start();
+
+    connect(converter, SIGNAL(newValue(int, int, RGB)), gridLayout, SLOT(setStripAmplitude(int, int, RGB)));
 }
 
 MainWindow2::~MainWindow2()

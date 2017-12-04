@@ -27,9 +27,9 @@ typedef struct {
 	int r;
 	int g;
 	int b;
-} RGB;
+} RGB2;
 
 
-void audio_to_rgb(unsigned char *buffer, int buffer_size, long rate, RGB *leds, int leds_strips, int leds_columns);
+void audio_to_rgb(unsigned char *buffer, int buffer_size, long rate, RGB2 *leds, int leds_strips, int leds_columns);
 
 #endif

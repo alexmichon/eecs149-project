@@ -1,6 +1,7 @@
 #include "mainwindow2.h"
 #include <QApplication>
 //#include "my_audioinput.h"
+#include "arduino_serial.h"
 
 int main(int argc, char *argv[])
 {
@@ -8,8 +9,8 @@ int main(int argc, char *argv[])
     MainWindow2 w;
     w.show();
 
-    //InputTest input;
-    //input.show();
+    //ArduinoSerial *ARDUINO = new ArduinoSerial("/dev/ttyACM0", 115200);
+    //ARDUINO->start();
 
     return a.exec();
 }

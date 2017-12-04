@@ -29,3 +29,18 @@ void LedStripLayout::enable(bool enabled) {
         getLed(i)->setState(enabled);
     }
 }
+
+void LedStripLayout::setAmplitude(int amplitude, RGB color) {
+    int max = amplitude;
+    if (max > _nLeds) {
+        max = _nLeds;
+    }
+
+    for (int i = 0; i < max; i++) {
+        getLed(i)->setOnColor(QColor(color.r, color.g, color.b));
+    }
+
+    for (int i = max; i < _nLeds; i++) {
+        getLed(i)->setOnColor(QColor(255, 255, 255));
+    }
+}

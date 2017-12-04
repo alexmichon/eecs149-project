@@ -40,3 +40,11 @@ void LedGridLayout::enable(bool enabled) {
         getStrip(i)->enable(enabled);
     }
 }
+
+
+void LedGridLayout::setStripAmplitude(int strip, int amplitude, RGB color) {
+    LedStripLayout *stripLayout = getStrip(strip);
+    if (stripLayout != NULL) {
+        stripLayout->setAmplitude(amplitude, color);
+    }
+}

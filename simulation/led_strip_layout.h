@@ -4,6 +4,7 @@
 #include <QGridLayout>
 #include <QWidget>
 #include "led_widget.h"
+#include "music_led_converter.h"
 
 #define DEFAULT_NB_LEDS 10
 
@@ -18,6 +19,8 @@ public:
 
     void refresh();
     void enable(bool enabled);
+
+    void setAmplitude(int amplitude, RGB color);
 
 signals:
 

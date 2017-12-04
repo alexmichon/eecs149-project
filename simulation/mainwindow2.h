@@ -5,6 +5,9 @@
 #include <qpushbutton.h>
 #include "signal_generator.h"
 
+#include "arduino_serial.h"
+#include "music_led_converter.h"
+
 namespace Ui {
 class MainWindow2;
 }
