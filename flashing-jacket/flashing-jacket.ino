@@ -31,12 +31,13 @@ LedStrip led_strips[NB_LED_STRIPS];
 
 
 void setup() {
+	// Explanations Needed
 	Serial.begin(9600);
 }
 
 void loop() {
 	read_sensors();
-	MainMovement movement = classifier.classify(torso_data, left_data, right_data);
+	ControlSignal signal = main_classifier.classify(torso_data, left_data, right_data);
 	update_main_state(movement);
 	
 	switch(main_state) {
@@ -50,7 +51,7 @@ void loop() {
 
 	update_leds();
 
-	delay(100);
+	delay(DELAY);
 }
 
 void read_sensors() {
@@ -71,8 +72,8 @@ void update_main_state() {
 }
 
 void update_biking() {
-	BikeMovement movement = bike_classifier.classify(torso_data, left_data, right_data);
-	switch(movement) {
+	HandGesture gesture = bike_classifier.classify(torso_data, left_data, right_data);
+	switch(gesture) {
 		
 	}
 }
