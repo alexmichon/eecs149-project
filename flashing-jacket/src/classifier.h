@@ -12,6 +12,11 @@ public:
 	ControlSignal classify(const ImuData torsoData, const ImuData leftData, const ImuData rightData);
 };
 
+class BrakeDetector {
+public:
+	BrakeDetector();
+	bool detect(const ImuData torsoData, const ImuData leftData, const ImuData rightData);
+}
 
 typedef enum {
 	UNKNOWN = -1,
