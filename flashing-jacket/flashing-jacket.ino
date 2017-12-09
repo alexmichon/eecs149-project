@@ -16,6 +16,7 @@ typedef enum {
 MainState main_state = BIKING;
 
 MainClassifier main_classifier = MainClassifier();
+BrakeDetector brake_detector = BrakeDetector();
 BikeClassifier bike_classifier = BikeClassifier();
 
 IMU torso_imu = IMU();
@@ -31,12 +32,13 @@ LedStrip led_strips[NB_LED_STRIPS];
 
 
 void setup() {
+	// Explanations Needed
 	Serial.begin(9600);
 }
 
 void loop() {
 	read_sensors();
-	MainMovement movement = classifier.classify(torso_data, left_data, right_data);
+	ControlSignal signal = main_classifier.classify(torso_data, left_data, right_data);
 	update_main_state(movement);
 	
 	switch(main_state) {
@@ -50,7 +52,7 @@ void loop() {
 
 	update_leds();
 
-	delay(100);
+	delay(DELAY);
 }
 
 void read_sensors() {
@@ -71,12 +73,24 @@ void update_main_state() {
 }
 
 void update_biking() {
-	BikeMovement movement = bike_classifier.classify(torso_data, left_data, right_data);
-	switch(movement) {
+	bool is_brake = brake_detector.detect(torso_data, left_data, right_data);
+	HandGesture gesture = bike_classifier.classify(torso_data, left_data, right_data);
+
+	if(is_brake) {
+
+	} else {
+
+	}
+
+	switch(gesture) {
 		
 	}
 }
 
 void update_music() {
+
+}
+
+void update_leds() {
 
 }

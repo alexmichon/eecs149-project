@@ -3,29 +3,32 @@
 
 typedef enum {
 	UNKNOWN = -1,
-	SWITCH
-} MainMovement;
+	SWITCH,
+} ControlSignal;
 
 class MainClassifier {
 public:
 	MainClasifier();
-	MainMovement classify(const ImuData torsoData, const ImuData leftData, const ImuData rightData);
+	ControlSignal classify(const ImuData torsoData, const ImuData leftData, const ImuData rightData);
 };
 
+class BrakeDetector {
+public:
+	BrakeDetector();
+	bool detect(const ImuData torsoData, const ImuData leftData, const ImuData rightData);
+}
 
 typedef enum {
 	UNKNOWN = -1,
-	BRAKE,
 	LEFT_SIGNAL,
 	RIGHT_SIGNAL,
-	LEFT_END,
-	RIGHT_END
-} BikeMovement;
+	STOP_SIGNAL
+} HandGesture;
 
 class BikeClassifier {
 public:
 	BikeClassifier();
-	BikeMovement classify(const ImuData torsoData, const ImuData leftData, const ImuData rightData);
+	HandGesture classify(const ImuData torsoData, const ImuData leftData, const ImuData rightData);
 };
 
 #endif
