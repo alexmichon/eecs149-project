@@ -48,3 +48,9 @@ target_wrapper.*
 
 # QtCtreator CMake
 CMakeLists.txt.user*
+
+# Libraries
+lib/
+
+# Executables
+simulation

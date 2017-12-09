@@ -93,11 +93,7 @@ class TestDataGetter(object):
                     # Empty line, which means the data will change to another batch
                     buffer = []
 
-                current_test_row_index += 1
-            else:
-                # Empty line, which means the data will change to another batch
-                current_test_row_index = 0
-                buffer = []
+        testfile.close()
 
         return np.array(result_matrix).astype(np.float)
 

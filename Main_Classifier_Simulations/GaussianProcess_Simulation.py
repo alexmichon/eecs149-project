@@ -59,7 +59,7 @@ def main():
     y = data_getter.get_y_data()
 
     # Dimensionality Reduction
-    dimred = DimensionReduction(X, y)
+    dimred = DimensionReduction(X, y, X)
     X_lda_2d = dimred.lda_2D_data()
 
     # GPC Plotter
