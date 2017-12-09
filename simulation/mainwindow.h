@@ -1,13 +1,12 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef MAINWINDOW2_H
+#define MAINWINDOW2_H
 
-#include <QMainWindow>
-#include <QPushButton>
-#include <QTimer>
+#include <qmainwindow.h>
+#include <qpushbutton.h>
+#include "signal_generator.h"
 
-#include "led_grid_layout.h"
-#include "../src/audio/audio.h"
-#include "audio_thread.h"
+#include "arduino_serial.h"
+#include "music_led_converter.h"
 
 namespace Ui {
 class MainWindow;
@@ -23,22 +22,21 @@ public:
 
 
 public slots:
-    void timerSlot();
-    void handleStartButton();
+    void handleLeftButton();
+    void handleRightButton();
+    void handleBrakeButton();
     void handleStopButton();
-
-signals:
-    void newColors(int strip, RGB *leds, int len);
 
 private:
     Ui::MainWindow *ui;
     LedGridLayout * gridLayout;
-    QPushButton *startButton;
+
+    QPushButton *leftButton;
+    QPushButton *rightButton;
+    QPushButton *brakeButton;
     QPushButton *stopButton;
 
-    QTimer *timer;
-
-    AudioThread *audioThread;
+    SignalGenerator *signalGenerator;
 };
 
-#endif // MAINWINDOW_H
+#endif // MAINWINDOW2_H

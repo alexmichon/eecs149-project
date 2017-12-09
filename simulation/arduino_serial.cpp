@@ -1,6 +1,6 @@
 #include "arduino_serial.h"
 
-ArduinoSerial::ArduinoSerial(char *port, int baudrate, MusicLedConverter *converter) {
+ArduinoSerial::ArduinoSerial(const QString port, qint32 baudrate, MusicLedConverter *converter) {
     mSerialPort = new QSerialPort();
     mSerialPort->setPortName(port);
     mSerialPort->setBaudRate(baudrate);
@@ -20,7 +20,7 @@ void ArduinoSerial::stop() {
 void ArduinoSerial::handleReadyRead() {
     qDebug("Reading");
     QByteArray bytes = mSerialPort->readLine();
-    onRead(QString::fromAscii(bytes.data()).toStdString().c_str());
+    onRead(QString::fromLocal8Bit(bytes.data()).toStdString().c_str());
 }
 
 ArduinoSerial::~ArduinoSerial() {

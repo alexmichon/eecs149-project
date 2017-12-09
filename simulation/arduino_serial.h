@@ -9,7 +9,7 @@ class ArduinoSerial: public QObject {
     Q_OBJECT
 
 public:
-    ArduinoSerial(char *port, int baudrate, MusicLedConverter *converter);
+    ArduinoSerial(const QString port, qint32 baudrate, MusicLedConverter *converter);
     ~ArduinoSerial();
 
     void start();

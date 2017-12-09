@@ -1,9 +1,12 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "ui_mainwindow2.h"
 
-#include <qmath.h>
+#include "left_generator.h"
+#include "right_generator.h"
+#include "brake_generator.h"
 
-#include "audio_thread.h"
+#include "arduino_serial.h"
+#include "music_led_converter.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -11,41 +14,45 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    //ledStrip = new LedStripWidget(5, this);
-
     QWidget *w = new QWidget(this);
     QVBoxLayout *vlayout = new QVBoxLayout(w);
     w->setLayout(vlayout);
 
     QWidget *w1 = new QWidget(w);
-    gridLayout = new LedGridLayout(w1);
+    gridLayout = new LedGridLayout(w1, 8, 8);
     w1->setLayout(gridLayout);
     vlayout->addWidget(w1);
 
-    startButton = new QPushButton("Start", w);
-    startButton->setGeometry(QRect(QPoint(100, 100), QSize(200, 50)));
-    vlayout->addWidget(startButton, 1);
+    leftButton = new QPushButton("Left", w);
+    leftButton->setGeometry(QRect(QPoint(100, 100), QSize(200, 50)));
+    vlayout->addWidget(leftButton, 1);
 
-    connect(startButton, SIGNAL (released()), this, SLOT (handleStartButton()));
+    rightButton = new QPushButton("Right", w);
+    rightButton->setGeometry(QRect(QPoint(100, 100), QSize(200, 50)));
+    vlayout->addWidget(rightButton, 1);
+
+    brakeButton = new QPushButton("Brake", w);
+    brakeButton->setGeometry(QRect(QPoint(100, 100), QSize(200, 50)));
+    vlayout->addWidget(brakeButton, 1);
 
     stopButton = new QPushButton("Stop", w);
     stopButton->setGeometry(QRect(QPoint(100, 100), QSize(200, 50)));
     vlayout->addWidget(stopButton, 1);
 
-    connect(stopButton, SIGNAL (released()), this, SLOT (handleStopButton()));
-
     setCentralWidget(w);
 
-    /*timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(timerSlot()));
-    timer->start(100);*/
+    connect(leftButton, SIGNAL (released()), this, SLOT (handleLeftButton()));
+    connect(rightButton, SIGNAL (released()), this, SLOT (handleRightButton()));
+    connect(brakeButton, SIGNAL (released()), this, SLOT (handleBrakeButton()));
+    connect(stopButton, SIGNAL (released()), this, SLOT (handleStopButton()));
 
-    for (int i = 0; i < gridLayout->getStripCount(); i++) {
-        LedStripLayout * stripLayout = gridLayout->getStrip(i);
-        for (int j = 0; j < stripLayout->getLedCount(); j++) {
-            stripLayout->getLed(j)->setState(true);
-        }
-    }
+
+    MusicLedConverter *converter = new MusicLedConverter();
+
+    ArduinoSerial *ARDUINO = new ArduinoSerial("COM6", 9600, converter);
+    ARDUINO->start();
+
+    connect(converter, SIGNAL(newValue(int, int, RGB)), gridLayout, SLOT(setStripAmplitude(int, int, RGB)));
 }
 
 MainWindow::~MainWindow()
@@ -53,33 +60,36 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-QColor getColor(int i, int j) {
-    static int counter = 0;
-    int r = qCeil(255*qPow(qCos(counter), 2));
-    int g = qCeil(255*qPow(qCos(counter + 90), 2));
-    int b = qCeil(255*qPow(qCos(counter/2), 2));
-    counter++;
-    return QColor(r, g, b);
-}
 
-void MainWindow::timerSlot() {
-    for (int i = 0; i < gridLayout->getStripCount(); i++) {
-        LedStripLayout * stripLayout = gridLayout->getStrip(i);
-        for (int j = 0; j < stripLayout->getLedCount(); j++) {
-            QColor color = getColor(i, j);
-            stripLayout->getLed(j)->setOnColor(color);
-        }
+
+
+
+void MainWindow::handleLeftButton() {
+    if (signalGenerator != NULL) {
+        signalGenerator->stop();
     }
+    signalGenerator = new LeftGenerator(gridLayout);
+    signalGenerator->start();
 }
 
+void MainWindow::handleRightButton() {
+    if (signalGenerator != NULL) {
+        signalGenerator->stop();
+    }
+    signalGenerator = new RightGenerator(gridLayout);
+    signalGenerator->start();
+}
 
-
-void MainWindow::handleStartButton() {
-    audioThread = new AudioThread(gridLayout, "/home/alex/Berkeley/EECS149-Project/test/test3.mp3");
-    //connect(audioThread, SIGNAL(newGridColors(RGB*, int, int)), gridLayout, SLOT(setColors(RGB*, int, int)));
-    audioThread->start();
+void MainWindow::handleBrakeButton() {
+    if (signalGenerator != NULL) {
+        signalGenerator->stop();
+    }
+    signalGenerator = new BrakeGenerator(gridLayout);
+    signalGenerator->start();
 }
 
 void MainWindow::handleStopButton() {
-    audioThread->cancel();
+    if (signalGenerator != NULL) {
+        signalGenerator->stop();
+    }
 }
