@@ -7,21 +7,10 @@ MusicLedConverter::MusicLedConverter() {
 }
 
 
-void MusicLedConverter::convert(int bin, int freqAmpl) {
-    if (freqAmpl > mMaxAmplitude) {
-        mMaxAmplitude = freqAmpl;
-    }
-
-    double dAmplitude = 20*log(freqAmpl / mMaxAmplitude);
-
-    int amplitude = (dAmplitude + 80) / 10;
-    if (amplitude < 0) {
-        amplitude = 0;
-    }
-
+void MusicLedConverter::convert(int bin, int *amplitude) {
     RGB color = {
         255, 0, 0
     };
 
-    emit(newValue(bin, amplitude, color));
+    //emit(newValue(bin, color));
 }

@@ -15,7 +15,7 @@ public:
     MusicLedConverter();
 
 public slots:
-    void convert(int bin, int amplitude);
+    void convert(int bin, int *amplitude);
 
 signals:
     void newValue(int strip, int amplitude, RGB color);

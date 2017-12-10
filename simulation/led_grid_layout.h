@@ -24,6 +24,7 @@ public:
 public slots:
     void setColors(RGB*, int, int);
     void setStripAmplitude(int, int, RGB);
+    void setAmplitudes(int, int *);
 
 private:
     int _nStrips;

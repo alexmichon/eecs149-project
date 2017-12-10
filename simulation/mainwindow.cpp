@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
     w->setLayout(vlayout);
 
     QWidget *w1 = new QWidget(w);
-    gridLayout = new LedGridLayout(w1, 8, 8);
+    gridLayout = new LedGridLayout(w1, 10, 10);
     w1->setLayout(gridLayout);
     vlayout->addWidget(w1);
 
@@ -49,10 +49,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     MusicLedConverter *converter = new MusicLedConverter();
 
-    ArduinoSerial *ARDUINO = new ArduinoSerial("COM6", 9600, converter);
+    ArduinoSerial *ARDUINO = new ArduinoSerial("COM6", 115200, NULL);
     ARDUINO->start();
 
-    connect(converter, SIGNAL(newValue(int, int, RGB)), gridLayout, SLOT(setStripAmplitude(int, int, RGB)));
+    connect(ARDUINO, SIGNAL(amplitudeRead(int,int*)), gridLayout, SLOT(setAmplitudes(int,int*)));
 }
 
 MainWindow::~MainWindow()

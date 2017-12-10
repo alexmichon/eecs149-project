@@ -31,16 +31,17 @@ void LedStripLayout::enable(bool enabled) {
 }
 
 void LedStripLayout::setAmplitude(int amplitude, RGB color) {
-    int max = amplitude;
-    if (max > _nLeds) {
-        max = _nLeds;
-    }
-
-    for (int i = 0; i < max; i++) {
-        getLed(i)->setOnColor(QColor(color.r, color.g, color.b));
+    int max = _nLeds - amplitude;
+    if (max < 0) {
+        max = 0;
     }
 
     for (int i = max; i < _nLeds; i++) {
-        getLed(i)->setOnColor(QColor(255, 255, 255));
+        getLed(i)->setOnColor(QColor(color.r, color.g, color.b));
+        getLed(i)->setState(true);
+    }
+
+    for (int i = 0; i < max; i++) {
+        getLed(i)->setState(false);
     }
 }

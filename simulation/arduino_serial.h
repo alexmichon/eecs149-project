@@ -19,6 +19,9 @@ public slots:
     void onRead(const char *read);
     void handleReadyRead();
 
+signals:
+    void amplitudeRead(int bin, int *ampl);
+
 private:
     QSerialPort *mSerialPort;
     MusicLedConverter *mMusicLedConverter;

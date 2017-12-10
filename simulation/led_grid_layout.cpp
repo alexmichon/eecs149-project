@@ -28,6 +28,18 @@ void LedGridLayout::setColors(RGB *leds, int leds_strips, int leds_rows) {
     }
 }
 
+void LedGridLayout::setAmplitudes(int len, int *amplitudes) {
+    RGB color = {255, 0, 0};
+    for (int i = 0; i < len; i++) {
+        LedStripLayout *stripLayout = getStrip(i);
+        if (stripLayout == NULL) { continue; }
+
+        stripLayout->setAmplitude(amplitudes[i], color);
+    }
+
+    refresh();
+}
+
 void LedGridLayout::refresh() {
     for (int i = 0; i < _nStrips; i++) {
         getStrip(i)->refresh();

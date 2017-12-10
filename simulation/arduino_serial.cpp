@@ -18,7 +18,6 @@ void ArduinoSerial::stop() {
 }
 
 void ArduinoSerial::handleReadyRead() {
-    qDebug("Reading");
     QByteArray bytes = mSerialPort->readLine();
     onRead(QString::fromLocal8Bit(bytes.data()).toStdString().c_str());
 }
@@ -28,28 +27,24 @@ ArduinoSerial::~ArduinoSerial() {
 }
 
 void ArduinoSerial::onRead(const char *read) {
-    int bin;
-    int ampl;
+    int bin = 0;
+    int ampl[10];
 
     char *pch;
+    char *tmp;
 
     pch = strtok((char*) read, "\t");
     if (pch == NULL) {
         return;
     }
 
-    bin = atoi(pch);
+    while(pch != NULL) {
+        ampl[bin] = strtol(pch, &tmp, 10);
+        if (*tmp != '\0') { break; }
 
-    pch = strtok(NULL, "\t");
-    if (pch == NULL) {
-        return;
+        bin++;
+        pch = strtok(NULL, "\t");
     }
 
-    ampl = atoi(pch);
-
-    qDebug("Bin: %d\tAmplitude: %d", bin, ampl);
-
-    if (mMusicLedConverter != NULL) {
-        mMusicLedConverter->convert(bin, ampl);
-    }
+    emit(amplitudeRead(bin, ampl));
 }
