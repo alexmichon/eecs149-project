@@ -1,55 +1,103 @@
-/*
- This example reads audio data from an Invensense's ICS43432 I2S microphone
- breakout board, and prints out the spectrum to the Serial console. The
- Serial Plotter built into the Arduino IDE can be used to plot the audio
- amplitude data (Tools -> Serial Plotter)
+#include "src/microphone/microphone.h"
+#include "src/leds/led_strip.h"
+#include "src/leds/led_strip_simu.h"
+#include "src/leds/led_grid.h"
 
- Circuit:
- * Arduino/Genuino Zero, MKRZero or MKR1000 board
- * ICS43432:
-   * GND connected GND
-   * 3.3V connected 3.3V (Zero) or VCC (MKR1000, MKRZero)
-   * WS connected to pin 0 (Zero) or pin 3 (MKR1000, MKRZero)
-   * CLK connected to pin 1 (Zero) or pin 2 (MKR1000, MKRZero)
-   * SD connected to pin 9 (Zero) or pin A6 (MKR1000, MKRZero)
+#include "src/leds/signals/brake_signal.h"
+#include "src/leds/signals/idle_signal.h"
 
- created 21 November 2016
- by Sandeep Mistry
- */
 
-#include <ArduinoSound.h>
-#include <math.h>
+// SIMULATION
+#define SIMULATION
 
-// sample rate for the input
-const int sampleRate = 2000;
 
-// size of the FFT to compute
-const int fftSize = 128;
 
-// size of the spectrum output, half of FFT size
-const int spectrumSize = fftSize / 2;
 
-// array to store spectrum output
-int spectrum[spectrumSize];
 
-// create an FFT analyzer to be used with the I2S input
-FFTAnalyzer fftAnalyzer(fftSize);
+// PINS
+#define PIN_STRIP1 9
+#define PIN_STRIP2 10
 
-// number of strips
+
+
+
+
+
+
+
+
+// LEDS
+
+// Grid
 #define NB_STRIPS 10
 #define NB_LEDS 10
 
-// average size
-const int averageSize = spectrumSize / (NB_STRIPS-1);
 
-// amplitude of strips
-double amplitudes[NB_STRIPS];
-int counters[NB_STRIPS];
+// Leds per strips
+#define NUMPIXELS1      20
+#define NUMPIXELS2      77
+
+#ifndef SIMULATION
+LedStrip ledStrip1(NUMPIXELS1, 0, PIN_STRIP1);
+LedStrip ledStrip2(NUMPIXELS2, NUMPIXELS1, PIN_STRIP2);
+#else
+LedStripSimu ledStrip1(NUMPIXELS1, 0, PIN_STRIP1);
+LedStripSimu ledStrip2(NUMPIXELS2, NUMPIXELS1, PIN_STRIP2);
+#endif
+
+LedStrip *ledStrips[2] = {&ledStrip1, &ledStrip2};
+LedGrid ledGrid(ledStrips, 2);
 
 
-#define HISTORY_SIZE 20
-double history[NB_STRIPS][HISTORY_SIZE];
-int history_counter = 0;
+
+
+
+// SIGNALS
+IdleSignal idleSignal(NB_STRIPS, NB_LEDS);
+BrakeSignal brakeSignal(NB_STRIPS, NB_LEDS);
+
+
+
+
+
+
+// MICROPHONE
+
+// sample rate for the input
+#define SAMPLE_RATE 2000
+
+// size of the FFT to compute
+#define FFT_SIZE 128
+
+// create an FFT analyzer to be used with the I2S input
+FFTAnalyzer fftAnalyzer(FFT_SIZE);
+
+Microphone microphone(FFT_SIZE, NB_STRIPS, NB_LEDS);
+
+int amplitudes[NB_STRIPS];
+
+
+
+
+
+
+
+// States
+#define BIKE 0
+#define MUSIC 1
+
+int state = BIKE;
+
+
+
+// Bike States
+#define BIKE_IDLE 0
+#define BIKE_BRAKE 1
+
+int bikeState = BIKE_IDLE;
+
+
+
 
 void setup() {
 // Open serial communications and wait for port to open:
@@ -60,68 +108,41 @@ void setup() {
     ; // wait for serial port to connect. Needed for native USB port only
   }
 
-  // setup the I2S audio input for the sample rate with 32-bits per sample
-  if (!AudioInI2S.begin(sampleRate, 32)) {
-    Serial.println("Failed to initialize I2S input!");
-    while (1); // do nothing
+  ledGrid.begin();
+  //microphone.begin(SAMPLE_RATE);
+}
+
+
+void updateBike() {
+  switch(bikeState) {
+    case BIKE_IDLE:
+      ledGrid.setSignal(&idleSignal);
+      break;
+    case BIKE_BRAKE:
+      ledGrid.setSignal(&brakeSignal);
+      break;
   }
 
-  // configure the I2S input as the input for the FFT analyzer
-  if (!fftAnalyzer.input(AudioInI2S)) {
-    Serial.println("Failed to set FFT analyzer input!");
-    while (1); // do nothing
+  ledGrid.refresh();
+}
+
+void updateMusic() {
+  if (microphone.available()) {
+    // read the new spectrum
+    microphone.read(amplitudes);
   }
 }
 
+
 void loop() {
-  // check if a new analysis is available
-  if (fftAnalyzer.available()) {
-    // read the new spectrum
-    fftAnalyzer.read(spectrum, spectrumSize);
-
-    for (int i = 0; i < NB_STRIPS; i++) {
-      amplitudes[i] = 0;
-      counters[i] = 0;
-    }
-
-    // print out the spectrum
-    for (int i = 0; i < spectrumSize; i++) {
-      if (spectrum[i] > 0) {
-        amplitudes[i/averageSize] += 20*log10(spectrum[i]) - 120;
-        counters[i/averageSize]++;
-      }
-    }
-  
-    for (int i = 0; i < NB_STRIPS; i++) {
-      if (counters[i] > 0) {
-        amplitudes[i] = amplitudes[i] / counters[i];
-
-        double average = 0;
-        for (int j = 0; j < HISTORY_SIZE; j++) {
-          average += history[i][j];
-        }
-        average /= HISTORY_SIZE;
-
-        history[i][history_counter] = amplitudes[i];
-  
-        if (average != 0) {
-          double variation = abs((amplitudes[i] - average) / average);
-          variation =   constrain(variation, 0.0, 0.2);
-          //Serial.print(variation);
-          //int height = map(variation, 0.0, 0.2, 0, NB_LEDS);
-          int height = (int) (variation * 5 * NB_LEDS);
-          Serial.print(height); // the spectrum value
-        }
-        else {
-          Serial.print(0);
-        }
-      }
-      else {
-        Serial.print(0);
-      }
-      Serial.print("\t"); //
-    }
-    history_counter = (history_counter + 1) % HISTORY_SIZE;
-    Serial.println();
+  switch(state) {
+    case BIKE:
+      updateBike();
+      break;
+    case MUSIC:
+      updateMusic();
+      break;
   }
+
+  delay(100);
 } 
