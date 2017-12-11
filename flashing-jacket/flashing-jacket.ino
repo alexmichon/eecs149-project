@@ -23,6 +23,7 @@ typedef enum {
 } LedSignal;
 
 MainState main_state = BIKING;
+// Buffer of the LED Control Signal
 LedSignal next_signal = IDLE;
 
 MainClassifier main_classifier = MainClassifier();
@@ -72,12 +73,10 @@ void read_sensors() {
 
 void update_main_state() {
 	if (movement == SWITCH) {
-		if (main_state == BIKING) {
+		if (main_state == BIKING)
 			main_state = MUSIC;
-		}
-		else {
+		else
 			main_state = BIKING;
-		}
 	}
 }
 
