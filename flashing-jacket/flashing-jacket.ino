@@ -9,6 +9,7 @@
 #include "src/leds/signals/direction_signal.h"
 #include "src/leds/signals/music_signal.h"
 
+#include "src/sensors/imu.h"
 #include "src/sensors/microphone.h"
 
 
@@ -23,7 +24,13 @@
 #define PIN_STRIP1 9
 #define PIN_STRIP2 10
 
+#define LSM9DS1_SCK 24
+#define LSM9DS1_MISO 22
+#define LSM9DS1_MOSI 23
 
+#define LSM9DS1_XGCS1 5 // CHIP SELECT IMU 1
+#define LSM9DS1_XGCS2 6 // CHIP SELECT IMU 2
+#define LSM9DS1_XGCS3 10 // CHIP SELECT IMU 2
 
 
 
@@ -85,6 +92,18 @@ LedGrid ledGrid(ledStrips, NB_STRIPS);
 
 
 
+
+
+// IMU
+
+
+IMU torsoImu(LSM9DS1_SCK, LSM9DS1_MISO, LSM9DS1_MOSI, LSM9DS1_XGCS1);
+IMU armImu(LSM9DS1_SCK, LSM9DS1_MISO, LSM9DS1_MOSI, LSM9DS1_XGCS2);
+IMU forearmImu(LSM9DS1_SCK, LSM9DS1_MISO, LSM9DS1_MOSI, LSM9DS1_XGCS3);
+
+IMU::Data torsoData;
+IMU::Data armData;
+IMU::Data forearmData;
 
 
 // MICROPHONE
