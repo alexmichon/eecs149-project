@@ -18,7 +18,7 @@ void DirectionGenerator::generate() {
 
     int nbLeds = nbStrips * nbLedPerStrips;
 
-    RGB *leds = (RGB *) malloc(nbLeds * sizeof(RGB));
+    QColor *leds = (QColor *) malloc(nbLeds * sizeof(QColor));
 
     int middle = nbLedPerStrips / 2;
 
@@ -42,7 +42,7 @@ void DirectionGenerator::generate() {
 
     mCount = mod(mCount + mDirection, nbStrips);
 
-    mLedGridLayouts->setColors(leds, nbStrips, nbLedPerStrips);
+    //mLedGridLayouts->setColors(leds, nbStrips, nbLedPerStrips);
     mLedGridLayouts->refresh();
 }
 

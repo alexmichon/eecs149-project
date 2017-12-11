@@ -9,6 +9,9 @@ public:
 	
 	virtual void begin2() override;
 	virtual void show2() override;
+
+protected:
+	char * mString;
 };
 
 #endif

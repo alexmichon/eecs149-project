@@ -2,6 +2,7 @@
 #define SIGNAL_GENERATOR_H
 
 #include <qtimer.h>
+#include <QColor>
 #include "led_grid_layout.h"
 
 

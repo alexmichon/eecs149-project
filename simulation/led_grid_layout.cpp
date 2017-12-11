@@ -2,7 +2,7 @@
 
 LedGridLayout::LedGridLayout(QWidget *parent, int nStrips, int nLeds) : QHBoxLayout(parent), _nStrips(nStrips) {
     for (int i = 0; i < nStrips; i++) {
-        addLayout(new LedStripLayout(parent, nLeds), i);
+        addLayout(new LedStripLayout(parent, nLeds));
     }
 }
 
@@ -17,7 +17,7 @@ LedStripLayout * LedGridLayout::getStrip(int index) {
 LedWidget * LedGridLayout::getLed(int strip, int led) {
     return getStrip(strip)->getLed(led);
 }
-
+/*
 void LedGridLayout::setColors(RGB *leds, int leds_strips, int leds_rows) {
     for (int i = 0; i < leds_strips; i++) {
         LedStripLayout *stripLayout = getStrip(i);
@@ -39,7 +39,7 @@ void LedGridLayout::setAmplitudes(int len, int *amplitudes) {
 
     refresh();
 }
-
+*/
 void LedGridLayout::refresh() {
     for (int i = 0; i < _nStrips; i++) {
         getStrip(i)->refresh();
@@ -53,10 +53,21 @@ void LedGridLayout::enable(bool enabled) {
     }
 }
 
-
+/*
 void LedGridLayout::setStripAmplitude(int strip, int amplitude, RGB color) {
     LedStripLayout *stripLayout = getStrip(strip);
     if (stripLayout != NULL) {
         stripLayout->setAmplitude(amplitude, color);
+    }
+}
+*/
+
+void LedGridLayout::setColor(int index, QColor *color) {
+    int stripIndex = index / getStrip(0)->getLedCount();
+    int ledIndex = index - stripIndex * getStrip(0)->getLedCount() ;
+
+    LedStripLayout *strip = getStrip(stripIndex);
+    if (strip != NULL) {
+        strip->setColor(ledIndex, color);
     }
 }

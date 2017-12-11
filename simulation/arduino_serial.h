@@ -2,14 +2,13 @@
 #define ARDUINO_SERIAL_READER_H
 
 #include <QSerialPort>
-
-#include "music_led_converter.h"
+#include <QColor>
 
 class ArduinoSerial: public QObject {
     Q_OBJECT
 
 public:
-    ArduinoSerial(const QString port, qint32 baudrate, MusicLedConverter *converter);
+    ArduinoSerial(const QString port, qint32 baudrate);
     ~ArduinoSerial();
 
     void start();
@@ -20,11 +19,11 @@ public slots:
     void handleReadyRead();
 
 signals:
-    void amplitudeRead(int bin, int *ampl);
+    void newLine(const char *line);
+    void colorRead(int, QColor *);
 
 private:
     QSerialPort *mSerialPort;
-    MusicLedConverter *mMusicLedConverter;
 
     bool mStarted;
 };

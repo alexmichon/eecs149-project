@@ -2,12 +2,11 @@
 #include <Adafruit_NeoPixel.h>
 
 
-uint32_t IDLE_COLOR = Adafruit_NeoPixel::Color(0,255,0);
+static uint32_t IDLE_COLOR = Adafruit_NeoPixel::Color(0,255,0);
 
 IdleSignal::IdleSignal(int nbRows, int nbColumns): Signal(nbRows, nbColumns) {
 
 }
-
 
 void IdleSignal::refresh() {
 }

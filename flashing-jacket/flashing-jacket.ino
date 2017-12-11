@@ -1,10 +1,15 @@
-#include "src/microphone/microphone.h"
+#include "src/classifiers/main_classifier.h"
+#include "src/classifiers/gesture_classifier.h"
+
 #include "src/leds/led_strip.h"
-#include "src/leds/led_strip_simu.h"
 #include "src/leds/led_grid.h"
 
 #include "src/leds/signals/brake_signal.h"
 #include "src/leds/signals/idle_signal.h"
+#include "src/leds/signals/direction_signal.h"
+#include "src/leds/signals/music_signal.h"
+
+#include "src/sensors/microphone.h"
 
 
 // SIMULATION
@@ -33,28 +38,49 @@
 #define NB_LEDS 10
 
 
+#ifndef SIMULATION
+
 // Leds per strips
 #define NUMPIXELS1      20
 #define NUMPIXELS2      77
 
-#ifndef SIMULATION
 LedStrip ledStrip1(NUMPIXELS1, 0, PIN_STRIP1);
 LedStrip ledStrip2(NUMPIXELS2, NUMPIXELS1, PIN_STRIP2);
-#else
-LedStripSimu ledStrip1(NUMPIXELS1, 0, PIN_STRIP1);
-LedStripSimu ledStrip2(NUMPIXELS2, NUMPIXELS1, PIN_STRIP2);
-#endif
-
 LedStrip *ledStrips[2] = {&ledStrip1, &ledStrip2};
+
 LedGrid ledGrid(ledStrips, 2);
 
+#else
 
+#include "src/leds/led_strip_simu.h"
 
+LedStripSimu ledStrip1(NB_LEDS, 0 * NB_LEDS, 0);
+LedStripSimu ledStrip2(NB_LEDS, 1 * NB_LEDS, 0);
+LedStripSimu ledStrip3(NB_LEDS, 2 * NB_LEDS, 0);
+LedStripSimu ledStrip4(NB_LEDS, 3 * NB_LEDS, 0);
+LedStripSimu ledStrip5(NB_LEDS, 4 * NB_LEDS, 0);
+LedStripSimu ledStrip6(NB_LEDS, 5 * NB_LEDS, 0);
+LedStripSimu ledStrip7(NB_LEDS, 6 * NB_LEDS, 0);
+LedStripSimu ledStrip8(NB_LEDS, 7 * NB_LEDS, 0);
+LedStripSimu ledStrip9(NB_LEDS, 8 * NB_LEDS, 0);
+LedStripSimu ledStrip10(NB_LEDS, 9 * NB_LEDS, 0);
 
+LedStrip *ledStrips[NB_STRIPS] = {
+  &ledStrip1, 
+  &ledStrip2, 
+  &ledStrip3,
+  &ledStrip4,
+  &ledStrip5,
+  &ledStrip6,
+  &ledStrip7,
+  &ledStrip8,
+  &ledStrip9,
+  &ledStrip10,
+};
 
-// SIGNALS
-IdleSignal idleSignal(NB_STRIPS, NB_LEDS);
-BrakeSignal brakeSignal(NB_STRIPS, NB_LEDS);
+LedGrid ledGrid(ledStrips, NB_STRIPS);
+
+#endif
 
 
 
@@ -74,7 +100,17 @@ FFTAnalyzer fftAnalyzer(FFT_SIZE);
 
 Microphone microphone(FFT_SIZE, NB_STRIPS, NB_LEDS);
 
-int amplitudes[NB_STRIPS];
+
+
+
+
+// SIGNALS
+IdleSignal idleSignal(NB_STRIPS, NB_LEDS);
+BrakeSignal brakeSignal(NB_STRIPS, NB_LEDS);
+LeftSignal leftSignal(NB_STRIPS, NB_LEDS);
+RightSignal rightSignal(NB_STRIPS, NB_LEDS);
+
+MusicSignal musicSignal(NB_STRIPS, NB_LEDS, &microphone);
 
 
 
@@ -82,19 +118,27 @@ int amplitudes[NB_STRIPS];
 
 
 
-// States
-#define BIKE 0
-#define MUSIC 1
-
-int state = BIKE;
+// CLASSIFIERS
 
 
+#ifndef SIMULATION
 
-// Bike States
-#define BIKE_IDLE 0
-#define BIKE_BRAKE 1
+MainClassifier mainClassifier;
+GestureClassifier gestureClassifier;
 
-int bikeState = BIKE_IDLE;
+#else
+
+#include "src/classifiers/main_classifier_simu.h"
+MainClassifierSimu mainClassifier;
+
+#include "src/classifiers/gesture_classifier_simu.h"
+GestureClassifierSimu gestureClassifier;
+
+#endif
+
+
+MainClassifier::State state = MainClassifier::State::MUSIC;
+GestureClassifier::State bikeState = GestureClassifier::State::IDLE;
 
 
 
@@ -109,40 +153,54 @@ void setup() {
   }
 
   ledGrid.begin();
-  //microphone.begin(SAMPLE_RATE);
+  microphone.begin(SAMPLE_RATE);
 }
+
+
+
+void updateState() {
+  state = mainClassifier.getState();
+}
+
 
 
 void updateBike() {
+  bikeState = gestureClassifier.getState();
+
   switch(bikeState) {
-    case BIKE_IDLE:
+    case GestureClassifier::State::IDLE:
       ledGrid.setSignal(&idleSignal);
       break;
-    case BIKE_BRAKE:
+    case GestureClassifier::State::BRAKE:
       ledGrid.setSignal(&brakeSignal);
       break;
+    case GestureClassifier::State::LEFT:
+      ledGrid.setSignal(&leftSignal);
+      break;
+    case GestureClassifier::State::RIGHT:
+      ledGrid.setSignal(&rightSignal);
+      break;
   }
-
-  ledGrid.refresh();
 }
 
 void updateMusic() {
-  if (microphone.available()) {
-    // read the new spectrum
-    microphone.read(amplitudes);
-  }
+  ledGrid.setSignal(&musicSignal);
 }
 
 
 void loop() {
+  updateState();
+
   switch(state) {
-    case BIKE:
+    case MainClassifier::State::BIKE:
       updateBike();
       break;
-    case MUSIC:
+    case MainClassifier::State::MUSIC:
       updateMusic();
       break;
   }
 
-  delay(100);
+  ledGrid.refresh();
+
+  delay(50);
 } 

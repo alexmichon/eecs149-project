@@ -72,9 +72,9 @@ void Microphone::read(int *amplitudes) {
       mHistory[mHistoryIndex][i] = mMagnitudes[i];
 
       if (average != 0) {
-        double variation = abs((mMagnitudes[i] - average) / average);
-        variation =   constrain(variation, 0.0, 0.2);
-        int height = (int) (variation * 5 * mMaxHeight);
+        double variation = (mMagnitudes[i] - average) / average;
+        variation =   constrain(variation, 0.0, 0.3);
+        int height = (int) (variation / 0.3 * mMaxHeight);
         amplitudes[i] = height;
       }
       else {

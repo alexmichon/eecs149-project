@@ -3,7 +3,7 @@
 LedStripLayout::LedStripLayout(QWidget *parent, int nLeds) : QVBoxLayout(parent), _nLeds(nLeds)
 {
     for (int i = 0; i < nLeds; i++) {
-        addWidget(new LedWidget(parent), i);
+        addWidget(new LedWidget(parent));
     }
 }
 
@@ -13,7 +13,7 @@ int LedStripLayout::getLedCount() {
 }
 
 LedWidget * LedStripLayout::getLed(int column) {
-    return (LedWidget*) itemAt(column)->widget();
+    return (LedWidget*) itemAt(_nLeds - column - 1)->widget();
 }
 
 
@@ -29,7 +29,7 @@ void LedStripLayout::enable(bool enabled) {
         getLed(i)->setState(enabled);
     }
 }
-
+/*
 void LedStripLayout::setAmplitude(int amplitude, RGB color) {
     int max = _nLeds - amplitude;
     if (max < 0) {
@@ -43,5 +43,12 @@ void LedStripLayout::setAmplitude(int amplitude, RGB color) {
 
     for (int i = 0; i < max; i++) {
         getLed(i)->setState(false);
+    }
+}
+*/
+void LedStripLayout::setColor(int index, QColor *color) {
+    LedWidget *led = getLed(index);
+    if (led != NULL) {
+        led->setOnColor(*color);
     }
 }

@@ -6,7 +6,7 @@ LedWidget::LedWidget(QWidget *parent) :
 {
     setFixedSize(28,28);
     lit = false;
-    ledOnColor = Qt::red;
+    ledOnColor = Qt::black;
     ledOffColor = Qt::black;
     ledOnPattern = Qt::SolidPattern;
     ledOffPattern = Qt::SolidPattern;

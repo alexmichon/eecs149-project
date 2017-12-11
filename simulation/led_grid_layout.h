@@ -2,8 +2,8 @@
 #define LED_GRID_LAYOUT_H
 
 #include <QHBoxLayout>
+#include <QColor>
 #include "led_strip_layout.h"
-#include "../src/audio/audio.h"
 
 #define DEFAULT_NB_STRIPS 5
 
@@ -17,14 +17,15 @@ public:
     int getStripCount();
     LedStripLayout * getStrip(int index);
     LedWidget * getLed(int strip, int led);
-
-    void refresh();
     void enable(bool enabled);
 
 public slots:
-    void setColors(RGB*, int, int);
-    void setStripAmplitude(int, int, RGB);
-    void setAmplitudes(int, int *);
+    //void setColors(RGB*, int, int);
+    //void setStripAmplitude(int, int, RGB);
+    //void setAmplitudes(int, int *);
+
+    void setColor(int, QColor *);
+    void refresh();
 
 private:
     int _nStrips;

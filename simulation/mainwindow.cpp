@@ -46,13 +46,16 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(brakeButton, SIGNAL (released()), this, SLOT (handleBrakeButton()));
     connect(stopButton, SIGNAL (released()), this, SLOT (handleStopButton()));
 
-
-    MusicLedConverter *converter = new MusicLedConverter();
-
-    ArduinoSerial *ARDUINO = new ArduinoSerial("COM6", 115200, NULL);
+    ArduinoSerial *ARDUINO = new ArduinoSerial("COM11", 115200);
     ARDUINO->start();
 
-    connect(ARDUINO, SIGNAL(amplitudeRead(int,int*)), gridLayout, SLOT(setAmplitudes(int,int*)));
+    gridLayout->enable(true);
+
+    connect(ARDUINO, SIGNAL(colorRead(int,QColor *)), gridLayout, SLOT(setColor(int,QColor *)));
+
+    QTimer *timer = new QTimer(this);
+    timer->setInterval(20);
+    connect(timer, SIGNAL(timeout()), gridLayout, SLOT(refresh()));
 }
 
 MainWindow::~MainWindow()

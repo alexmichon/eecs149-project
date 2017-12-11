@@ -16,7 +16,7 @@ void BrakeGenerator::generate() {
 
     int nbLeds = nbStrips * nbLedPerStrips;
 
-    RGB *leds = (RGB *) malloc(nbLeds * sizeof(RGB));
+    QColor *leds = (QColor *) malloc(nbLeds * sizeof(QColor));
 
     for (int i = 0; i < nbStrips; i++) {
         for (int j = 0; j < nbLedPerStrips; j++) {
@@ -24,6 +24,6 @@ void BrakeGenerator::generate() {
         }
     }
 
-    mLedGridLayouts->setColors(leds, nbStrips, nbLedPerStrips);
+    //mLedGridLayouts->setColors(leds, nbStrips, nbLedPerStrips);
     mLedGridLayouts->refresh();
 }

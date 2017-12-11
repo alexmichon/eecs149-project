@@ -1,16 +1,16 @@
 #include "arduino_serial.h"
 
-ArduinoSerial::ArduinoSerial(const QString port, qint32 baudrate, MusicLedConverter *converter) {
+ArduinoSerial::ArduinoSerial(const QString port, qint32 baudrate) {
     mSerialPort = new QSerialPort();
     mSerialPort->setPortName(port);
     mSerialPort->setBaudRate(baudrate);
     mSerialPort->open(QIODevice::ReadWrite);
-
-    mMusicLedConverter = converter;
+    mSerialPort->flush();
 }
 
 void ArduinoSerial::start() {
     connect(mSerialPort, SIGNAL(readyRead()), this, SLOT(handleReadyRead()));
+    connect(this, SIGNAL(newLine(const char*)), this, SLOT(onRead(const char*)));
 }
 
 void ArduinoSerial::stop() {
@@ -18,8 +18,10 @@ void ArduinoSerial::stop() {
 }
 
 void ArduinoSerial::handleReadyRead() {
-    QByteArray bytes = mSerialPort->readLine();
-    onRead(QString::fromLocal8Bit(bytes.data()).toStdString().c_str());
+    while(mSerialPort->canReadLine()) {
+        QByteArray bytes = mSerialPort->readLine();
+        emit(newLine(QString::fromLocal8Bit(bytes.data()).toStdString().c_str()));
+    }
 }
 
 ArduinoSerial::~ArduinoSerial() {
@@ -27,24 +29,38 @@ ArduinoSerial::~ArduinoSerial() {
 }
 
 void ArduinoSerial::onRead(const char *read) {
-    int bin = 0;
-    int ampl[10];
+
+    int index;
+    quint32 color;
+    quint8 r;
+    quint8 g;
+    quint8 b;
 
     char *pch;
     char *tmp;
 
     pch = strtok((char*) read, "\t");
-    if (pch == NULL) {
-        return;
-    }
-
     while(pch != NULL) {
-        ampl[bin] = strtol(pch, &tmp, 10);
-        if (*tmp != '\0') { break; }
+        index = strtol(pch, &tmp, 10);
+        if (tmp == pch) {
+            break;
+        }
 
-        bin++;
         pch = strtok(NULL, "\t");
-    }
+        if (pch == NULL) {
+            break;
+        }
 
-    emit(amplitudeRead(bin, ampl));
+        color = strtol(pch, &tmp, 10);
+        if (tmp == pch) {
+            break;
+        }
+
+        emit(colorRead(index, new QColor((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF)));
+
+        pch = strtok(NULL, "\t");
+        if (pch == NULL) {
+            break;
+        }
+    }
 }
