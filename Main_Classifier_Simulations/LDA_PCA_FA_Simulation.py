@@ -27,6 +27,13 @@ class DimensionReduction(object):
         reductor = FactorAnalysis(n_components=self.dim).fit(self.X_train, self.y_train)
         return reductor.transform(self.X_train), reductor.transform(self.X_div)
 
+def get_LDA(only_gst_data=True):
+    data_getter = TestDataGetter(5, 4)
+    X = data_getter.get_x_data(only_gst_data=only_gst_data)
+    y = data_getter.get_y_data(only_gst_data=only_gst_data) 
+
+    return LinearDiscriminantAnalysis(n_components=2).fit(X, y)
+
 def main():
     # Get Data
     data_getter = TestDataGetter(5, 4)

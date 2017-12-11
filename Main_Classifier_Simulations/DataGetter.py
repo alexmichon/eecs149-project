@@ -5,7 +5,6 @@ import numpy as np
 import random
 import os
 
-
 class Config(object):
     """
     Define a class to store parameters
@@ -76,7 +75,7 @@ class TestDataGetter(object):
         print("Getting Data From " + file_path + " ...")
 
         result_matrix = []
-        file_path = os.path.join(os.path.split(os.path.realpath(__file__))[0], file_path)
+        file_path = os.path.join(os.path.dirname(__file__), file_path)
 
         with open(file_path) as testfile:
             buffer = []  # Store the overlap data

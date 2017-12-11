@@ -222,4 +222,4 @@ void loop() {
   ledGrid.refresh();
 
   delay(50);
-} 
+}

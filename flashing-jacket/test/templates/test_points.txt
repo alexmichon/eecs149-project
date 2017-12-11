@@ -1,0 +1,11 @@
+#ifndef TEST_POINTS_H
+#define TEST_POINTS_H
+
+#include "LDA_Parameters.h"
+
+#define NB_TEST_POINTS $NB_TEST_POINTS
+
+const float TEST_POINTS[NB_TEST_POINTS][LDA_FEATURES] = $TEST_POINTS;
+const int TEST_PREDICTIONS[NB_TEST_POINTS] = $TEST_PREDICTIONS;
+
+#endif
