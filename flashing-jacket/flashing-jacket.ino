@@ -12,8 +12,18 @@ typedef enum {
 	MUSIC
 } MainState;
 
+typedef enum {
+	IDLE,
+	BRAKE,
+	BRAKE_LEFT,
+	BRAKE_RIGHT,
+	LEFT,
+	RIGHT,
+	STOP
+} LedSignal;
 
 MainState main_state = BIKING;
+LedSignal next_signal = IDLE;
 
 MainClassifier main_classifier = MainClassifier();
 BrakeDetector brake_detector = BrakeDetector();
@@ -26,7 +36,6 @@ IMU right_imu = IMU();
 ImuData torso_data;
 ImuData left_data;
 ImuData right_data;
-
 
 LedStrip led_strips[NB_LED_STRIPS];
 
@@ -76,14 +85,39 @@ void update_biking() {
 	bool is_brake = brake_detector.detect(torso_data, left_data, right_data);
 	HandGesture gesture = bike_classifier.classify(torso_data, left_data, right_data);
 
+	//TODO Iter-0: Refactoring of this switch statement if working
 	if(is_brake) {
-
+		switch (gesture) {
+		    case UNKNOWN:
+		      next_signal = BRAKE;
+		      break;
+		    case LEFT_GEST:
+		      next_signal = BRAKE_LEFT;
+		      break;
+		    case RIGHT_GEST:
+		    	next_signal = BRAKE_RIGHT;
+		    	break;
+		    case STOP_GEST:
+		    	next_signal = STOP;
+		    	break;
+		    default:
+		      break;
+		}
 	} else {
-
-	}
-
-	switch(gesture) {
-		
+		switch (gesture) {
+		    case LEFT_GEST:
+		      next_signal = LEFT;
+		      break;
+		    case RIGHT_GEST:
+		    	next_signal = RIGHT;
+		    	break;
+		    case STOP_GEST:
+		    	next_signal = STOP;
+		    	break;
+		    default:
+		    	next_signal = IDEL;
+		      break;
+		}
 	}
 }
 
