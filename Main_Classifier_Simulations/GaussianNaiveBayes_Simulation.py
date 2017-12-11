@@ -9,7 +9,7 @@ def test_GNB(X_train, y_train, X_test, y_test, dim=2):
     y_pred = gnb.fit(X_train, y_train).predict(X_test)
     # print("Number of mislabeled points out of a total %d points : %d"
     #       % (X_test.shape[0], (y_test != y_pred).sum()))
-    print("Dim = %2d: Error Rate of GNB classifier: %s%%" % (dim, ((y_test != y_pred).sum()/X_test.shape[0]*100)) )
+    print("Dim = %2d: Error Rate of GNB classifier: %s%%" % (dim, (float((y_test != y_pred).sum())/X_test.shape[0]*100)) )
 
 def main():
     # Get Data
