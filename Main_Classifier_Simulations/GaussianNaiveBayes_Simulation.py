@@ -42,7 +42,7 @@ def test_dim():
     # Dimensionality Reduction
     for i in range(1,31):
         dimred = DimensionReduction(X_train, y_train, X_test, i)
-        X_reduced_trian, X_reduced_test = dimred.lda_data()
+        X_reduced_trian, X_reduced_test = dimred.pca_data()
         test_GNB(X_reduced_trian, y_train, X_reduced_test, y_test, i)
 
 if __name__ == "__main__":
