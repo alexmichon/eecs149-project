@@ -11,8 +11,8 @@
 #define NUMPIXELS1      20
 #define NUMPIXELS2      77
  
-Adafruit_NeoPixel pixels1 = Adafruit_NeoPixel(NUMPIXELS1, 9, NEO_GRB + NEO_KHZ800);
-Adafruit_NeoPixel pixels2 = Adafruit_NeoPixel(NUMPIXELS2, 10, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel pixels1 = Adafruit_NeoPixel(NUMPIXELS1, 11, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel pixels2 = Adafruit_NeoPixel(NUMPIXELS2, 12, NEO_GRB + NEO_KHZ800);
 
 // Colors
 #define RED           pixels1.Color(255,0,0)
@@ -420,6 +420,7 @@ void loop() {
       state = NONE;
       Serial.println("Invalid message");
     }
+    Serial.println("Received");
   }
 
   switch(state) {
