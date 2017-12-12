@@ -15,7 +15,6 @@ class DimensionReduction(object):
         self.dim     = dim
 
     def lda_data(self):
-        print(self.dim)
         reductor = LinearDiscriminantAnalysis(n_components=self.dim).fit(self.X_train, self.y_train)
         return reductor.transform(self.X_train), reductor.transform(self.X_div)
 
