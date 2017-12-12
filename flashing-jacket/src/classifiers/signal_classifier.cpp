@@ -1,17 +1,19 @@
 #include "signal_classifier.h"
 #include <string.h>
 
-SignalClassifier::SignalClassifier(): GnbClassifier(), LDA() {
-	
+SignalClassifier::SignalClassifier(): GnbClassifier(), LDA(),
+	mWindow(Window(SIGNAL_WINDOW))
+{
 }
 
 
 SignalClassifier::State SignalClassifier::classify(float *torsoData, float *armData, float *forearmData) {
-	memcpy(&(fullPoint[0]), torsoData, 6 * sizeof(float));
-	memcpy(&(fullPoint[6]), armData, 6 * sizeof(float));
-	memcpy(&(fullPoint[12]), forearmData, 6 * sizeof(float));
+	memcpy(&(newPoint[0]), torsoData, 6 * sizeof(float));
+	memcpy(&(newPoint[6]), armData, 6 * sizeof(float));
+	memcpy(&(newPoint[12]), forearmData, 6 * sizeof(float));
 
-
+	mWindow.push(newPoint);
+	transform(mWindow.get(), reducedPoint);
 
 	uint8_t cls = predict(reducedPoint);
 

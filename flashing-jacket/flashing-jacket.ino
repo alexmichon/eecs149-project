@@ -157,12 +157,12 @@ MusicSignal musicSignal(NB_STRIPS, NB_LEDS, &microphone);
 
 // CLASSIFIERS
 
-#define SIMULATION_CLASSIFIERS
+//#define SIMULATION_CLASSIFIERS
 
 
 #ifndef SIMULATION_CLASSIFIERS
 
-ModeClassifier ModeClassifier;
+ModeClassifier modeClassifier;
 SignalClassifier signalClassifier;
 GestureClassifier gestureClassifier;
 
@@ -269,7 +269,7 @@ void actuate() {
 void loop() {
   sense();
   analyze();
-  actuate();
+  //actuate();
 
   delay(DELAY);
 }

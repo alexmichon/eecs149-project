@@ -4,6 +4,7 @@
 #include "signal_parameters.h"
 #include "gnb_classifier.h"
 #include "lda.h"
+#include "window.h"
 
 class SignalClassifier: public GnbClassifier, public LDA {
 public:
@@ -31,8 +32,10 @@ protected:
 	virtual float getXbar(uint8_t feature) override;
 	virtual float getScaling(uint8_t feature, uint8_t cls) override;
 
-	float fullPoint[18];
+	float newPoint[18];
 	float reducedPoint[SIGNAL_DIMENSIONS];
+
+	Window mWindow;
 };
 
 #endif

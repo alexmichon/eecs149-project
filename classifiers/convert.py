@@ -48,8 +48,9 @@ def get_lda_template_values(lda, prefix=""):
     }
 
 
-def get_gnb_template_values(clf, prefix=""):
+def get_gnb_template_values(clf, window, prefix=""):
     return {
+        prefix + 'WINDOW'         : window,
         prefix + 'GNB_CLASS_PRIOR': '{' + ', '.join(map(str, clf.class_prior_)) + '}',
         prefix + 'GNB_MEANS'      : '{' + ', '.join(['{' + ', '.join(map(str, x)) + '}' for x in clf.theta_.tolist()]) + '}',
         prefix + 'GNB_STDEVS'     : '{' + ', '.join(['{' + ', '.join(map(str, x)) + '}' for x in clf.sigma_.tolist()]) + '}',
@@ -58,9 +59,9 @@ def get_gnb_template_values(clf, prefix=""):
     
 
 
-def fill_classifier_template(dr, clf, template_path, target_path, prefix=""):
+def fill_classifier_template(dr, clf, window, template_path, target_path, prefix=""):
     values = {}
-    values.update(get_gnb_template_values(clf, prefix=prefix))
+    values.update(get_gnb_template_values(clf, window, prefix=prefix))
     values.update(get_lda_template_values(dr, prefix=prefix))
     fill_template(values, template_path, target_path)
 
@@ -79,7 +80,7 @@ def fill_test_template(X, y_predicted, template_path, target_path):
 
 
 def main():
-    getter = data_getter.TestDataGetter(5, 4)
+    getter = data_getter.TestDataGetter(10, 9)
     X = getter.get_x_data(True)
     y = getter.get_y_data(True)
     signal_dr, signal_gnb = gnb.best_gnb(X, y)
@@ -88,13 +89,13 @@ def main():
         print("PCA NOT SUPPORTED")
         return
 
-    getter = data_getter.TestDataGetter(5, 4)
+    getter = data_getter.TestDataGetter(10, 9)
     X = getter.get_x_data(False)
     y = getter.get_y_data(False)
     gesture_dr, gesture_gnb = gnb.best_gnb(X, y)
 
-    fill_classifier_template(signal_dr, signal_gnb, TEMPLATE_DIR + 'signal_parameters.txt', CLASSIFIERS_DIR + 'signal_parameters.h', "SIGNAL_")
-    fill_classifier_template(gesture_dr, gesture_gnb, TEMPLATE_DIR + 'gesture_parameters.txt', CLASSIFIERS_DIR + 'gesture_parameters.h', "GESTURE_")
+    fill_classifier_template(signal_dr, signal_gnb, 10, TEMPLATE_DIR + 'signal_parameters.txt', CLASSIFIERS_DIR + 'signal_parameters.h', "SIGNAL_")
+    fill_classifier_template(gesture_dr, gesture_gnb, 10, TEMPLATE_DIR + 'gesture_parameters.txt', CLASSIFIERS_DIR + 'gesture_parameters.h', "GESTURE_")
 
     fill_test_template(X, signal_gnb.predict(signal_dr.transform(X)), TEST_TEMPLATE_DIR + 'test_points.txt', TEST_CLASSIFIERS_DIR + 'test_points.h')
 

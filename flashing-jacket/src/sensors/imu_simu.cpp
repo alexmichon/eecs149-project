@@ -9,6 +9,6 @@ bool IMUSimu::begin() {
 
 void IMUSimu::read(Data *data) {
 	for (int i = 0; i < 6; i++) {
-		(*data)[i] = random(-100, 100) / 100;
+		(*data)[i] = ((float)random(-100, 100)) / 100;
 	}
 }

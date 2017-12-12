@@ -105,12 +105,12 @@ def best_gnb(X, y):
 
 
 if __name__ == "__main__":
-    data_getter = TestDataGetter(5, 4)
+    data_getter = TestDataGetter(10, 9)
     X = data_getter.get_x_data()
     y = data_getter.get_y_data()
     main_dr, main_gnb = best_gnb(X, y)
 
-    data_getter = TestDataGetter(5, 4)
+    data_getter = TestDataGetter(10, 9)
     X = data_getter.get_x_data(False)
     y = data_getter.get_y_data(False)
     gesture_dr, gesture_gnb = best_gnb(X, y)
