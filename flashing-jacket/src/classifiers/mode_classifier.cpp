@@ -5,8 +5,8 @@ ModeClassifier::ModeClassifier(): GnbClassifier(), LDA() {
 }
 
 
-ModeClassifier::State ModeClassifier::classify(float *torsoData, float *armData, float *forearmData) {
-	return BIKE;
+ModeClassifier::Signal ModeClassifier::classify(float *torsoData, float *armData, float *forearmData) {
+	return NONE;
 }
 
 
