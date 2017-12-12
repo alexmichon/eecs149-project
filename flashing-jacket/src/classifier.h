@@ -20,9 +20,9 @@ public:
 
 typedef enum {
 	UNKNOWN = -1,
-	LEFT_SIGNAL,
-	RIGHT_SIGNAL,
-	STOP_SIGNAL
+	LEFT_GEST,
+	RIGHT_GEST,
+	STOP_GEST
 } HandGesture;
 
 class BikeClassifier {
