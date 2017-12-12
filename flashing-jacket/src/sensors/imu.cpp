@@ -21,11 +21,10 @@ void IMU::read(Data *data) {
 	sensors_event_t a, g;
   	getEvent(&a, &g);
 
-  	data->accX = a.acceleration.x;
-  	data->accY = a.acceleration.y;
-  	data->accZ = a.acceleration.z;
-
-  	data->gyrX = g.gyro.x;
-  	data->gyrY = g.gyro.y;
-  	data->gyrZ = g.gyro.z;
+  	*data[0] = a.acceleration.x;
+  	*data[1] = a.acceleration.y;
+  	*data[2] = a.acceleration.z;
+  	*data[3] = g.gyro.x;
+  	*data[4] = g.gyro.y;
+  	*data[5] = g.gyro.z;
 }

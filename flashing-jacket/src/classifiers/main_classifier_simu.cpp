@@ -5,7 +5,7 @@ MainClassifierSimu::MainClassifierSimu(): MainClassifier() {
 
 }
 
-MainClassifier::State MainClassifierSimu::getState() {
+MainClassifierSimu::State MainClassifierSimu::classify(float *torsoData, float *armData, float *forearmData) {
 	String msg;
 	if (Serial.available() > 0) { 
 	    msg = Serial.readString();

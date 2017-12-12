@@ -1,5 +1,4 @@
-#include "GaussianNB.h"
-#include "LDA.h"
+#include "main_classifier.h"
 #include "test_points.h"
 
 #include <stdio.h>
@@ -7,14 +6,13 @@
 int main() {
 	int score = 0;
 
+	MainClassifier mainClassifier = MainClassifier();
+
 	for (int i = 0; i < NB_TEST_POINTS; i++) {
 		const float* point = TEST_POINTS[i];
 		int prediction = TEST_PREDICTIONS[i];
-		
-		float transformed[LDA_DIMENSIONS] = {0};
-		lda.transform(point, transformed);
 
-		int cls = gnb.predict(transformed);
+		int cls = mainClassifier.predict(point);
 		
 		if (cls == prediction) {
 			score++;

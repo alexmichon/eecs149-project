@@ -9,14 +9,7 @@
 class IMU: public Adafruit_LSM9DS1 {
 public:
 
-	typedef struct {
-		float accX;
-		float accY; 
-		float accZ;
-		float gyrX; 
-		float gyrY; 
-		float gyrZ;
-	} Data;
+	typedef float Data[6];
 
 	IMU(int sck, int miso, int mosi, int cs);
 

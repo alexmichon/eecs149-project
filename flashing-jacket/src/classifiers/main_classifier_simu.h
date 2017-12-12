@@ -7,7 +7,7 @@ class MainClassifierSimu: public MainClassifier {
 public:
 	MainClassifierSimu();
 
-	virtual State getState() override;
+	virtual State classify(float *torsoData, float *armData, float *forearmData) override;
 
 private:
 	

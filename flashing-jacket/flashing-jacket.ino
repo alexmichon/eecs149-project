@@ -177,8 +177,15 @@ void setup() {
 
 
 
+void updateSensors() {
+  torsoImu.read(&torsoData);
+  armImu.read(&armData);
+  forearmImu.read(&forearmData);
+}
+
+
 void updateState() {
-  state = mainClassifier.getState();
+  state = mainClassifier.classify(torsoData, armData, forearmData);
 }
 
 
@@ -208,6 +215,7 @@ void updateMusic() {
 
 
 void loop() {
+  updateSensors();
   updateState();
 
   switch(state) {
