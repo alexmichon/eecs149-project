@@ -7,7 +7,7 @@ class GestureClassifierSimu: public GestureClassifier {
 public:
 	GestureClassifierSimu();
 
-	virtual bool getState();
+	virtual bool classify(float *forearmData) override;
 };
 
 #endif

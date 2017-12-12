@@ -6,6 +6,8 @@
 class ModeClassifierSimu: public ModeClassifier {
 public:
 	ModeClassifierSimu();
+
+	virtual bool classify(float *forearmData) override;
 };
 
 #endif

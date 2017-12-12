@@ -8,7 +8,7 @@ class SignalClassifierSimu: public SignalClassifier {
 public:
 	SignalClassifierSimu();
 
-	virtual State classify(float *imuData, float *armData, float *forearmData) override;
+	virtual State classify(float *forearmData) override;
 
 protected:
 	State nextState(State state);

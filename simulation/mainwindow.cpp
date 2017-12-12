@@ -46,7 +46,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(brakeButton, SIGNAL (released()), this, SLOT (handleBrakeButton()));
     connect(stopButton, SIGNAL (released()), this, SLOT (handleStopButton()));
 
-    ArduinoSerial *ARDUINO = new ArduinoSerial("COM11", 115200);
+    ArduinoSerial *ARDUINO = new ArduinoSerial("COM9", 115200);
     ARDUINO->start();
 
     gridLayout->enable(true);

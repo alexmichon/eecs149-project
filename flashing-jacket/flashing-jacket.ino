@@ -8,10 +8,8 @@
 #include "src/leds/signals/brake_signal.h"
 #include "src/leds/signals/idle_signal.h"
 #include "src/leds/signals/direction_signal.h"
-#include "src/leds/signals/music_signal.h"
 
 #include "src/sensors/imu.h"
-#include "src/sensors/microphone.h"
 
 
 
@@ -22,8 +20,8 @@
 
 
 // PINS
-#define PIN_STRIP1 9
-#define PIN_STRIP2 10
+#define PIN_STRIP1 12
+#define PIN_STRIP2 11
 
 #define LSM9DS1_SCK 24
 #define LSM9DS1_MISO 22
@@ -31,7 +29,7 @@
 
 #define LSM9DS1_XGCS1 5 // CHIP SELECT IMU 1
 #define LSM9DS1_XGCS2 6 // CHIP SELECT IMU 2
-#define LSM9DS1_XGCS3 10 // CHIP SELECT IMU 2
+#define LSM9DS1_XGCS3 10 // CHIP SELECT IMU 3
 
 
 
@@ -101,7 +99,7 @@ LedGrid ledGrid(ledStrips, NB_STRIPS);
 
 // IMU
 
-#define SIMULATION_IMU
+//#define SIMULATION_IMU
 
 #ifndef SIMULATION_IMU
 
@@ -124,20 +122,6 @@ IMU::Data armData;
 IMU::Data forearmData;
 
 
-// MICROPHONE
-
-// sample rate for the input
-#define SAMPLE_RATE 2000
-
-// size of the FFT to compute
-#define FFT_SIZE 128
-
-// create an FFT analyzer to be used with the I2S input
-FFTAnalyzer fftAnalyzer(FFT_SIZE);
-
-Microphone microphone(FFT_SIZE, NB_STRIPS, NB_LEDS);
-
-
 
 
 
@@ -147,8 +131,6 @@ BrakeSignal brakeSignal(NB_STRIPS, NB_LEDS);
 LeftSignal leftSignal(NB_STRIPS, NB_LEDS);
 RightSignal rightSignal(NB_STRIPS, NB_LEDS);
 
-MusicSignal musicSignal(NB_STRIPS, NB_LEDS, &microphone);
-
 
 
 
@@ -157,7 +139,7 @@ MusicSignal musicSignal(NB_STRIPS, NB_LEDS, &microphone);
 
 // CLASSIFIERS
 
-//#define SIMULATION_CLASSIFIERS
+#define SIMULATION_CLASSIFIERS
 
 
 #ifndef SIMULATION_CLASSIFIERS
@@ -179,15 +161,41 @@ GestureClassifierSimu gestureClassifier;
 
 #endif
 
-typedef enum {
-  BIKING,
-  MUSIC
-} MainState;
-
-ModeClassifier::Signal modeSig = ModeClassifier::Signal::NONE;
-MainState currentState = BIKE;
+bool switchMode = false;
+ModeClassifier::State mode = ModeClassifier::State::BIKE;
 SignalClassifier::State bikeState = SignalClassifier::State::IDLE;
 bool gesture = false;
+
+
+
+
+
+// MUSIC
+
+//#define EXCLUSE_MUSIC
+
+#ifndef EXCLUSE_MUSIC
+
+#include "src/sensors/microphone.h"
+#include "src/leds/signals/music_signal.h"
+
+// sample rate for the input
+#define SAMPLE_RATE 2000
+
+// size of the FFT to compute
+#define FFT_SIZE 128
+
+// create an FFT analyzer to be used with the I2S input
+FFTAnalyzer fftAnalyzer(FFT_SIZE);
+
+Microphone microphone(FFT_SIZE, NB_STRIPS, NB_LEDS);
+
+MusicSignal musicSignal(NB_STRIPS, NB_LEDS, &microphone);
+
+#endif
+
+
+
 
 
 
@@ -200,76 +208,80 @@ void setup() {
     ; // wait for serial port to connect. Needed for native USB port only
   }
 
-  torsoImu.begin();
+  //torsoImu.begin();
   delay(10);
-  armImu.begin();
+  //armImu.begin();
   delay(10);
   forearmImu.begin();
 
-  //microphone.begin(SAMPLE_RATE);
+#ifndef EXCLUSE_MUSIC
+  microphone.begin(SAMPLE_RATE);
+#endif
   ledGrid.begin();
   ledGrid.setSignal(&idleSignal);
 }
 
-void update() {
-  if(currentState == BIKE)
-      updateBike();
-    else
-      updateMusic();
-}
-
 void sense() {
-  torsoImu.read(&torsoData);
-  armImu.read(&armData);
+  //torsoImu.read(&torsoData);
+  //armImu.read(&armData);
   forearmImu.read(&forearmData);
 }
 
-void detect() {
-  gesture = gestureClassifier.classify(torsoData, armData, forearmData);
-  
-  if (gesture)
-    analyze();
-  else
-    update();
-}
-
 void analyze() {
-  switch = modeClassifier.classify(torsoData, armData, forearmData);
+  gesture = gestureClassifier.classify(forearmData);
 
-  if(switch == SWITCH){
-    if(currentState == BIKE)
-      currentState == MUSIC;
-    else
-      currentState == BIKE;
-  } else {
-    bikeState = signalClassifier.classify(torsoData, armData, forearmData);
-    update();
+  // Detect gesture
+  
+  if (gesture) {
+    Serial.println("Detected gesture");
+    switchMode = modeClassifier.classify(forearmData);
+
+    if(switchMode){
+      Serial.println("Detected switch");
+      switch(mode) {
+        case ModeClassifier::State::BIKE:
+          mode == ModeClassifier::State::MUSIC;
+          break;
+        case ModeClassifier::State::MUSIC:
+          mode == ModeClassifier::State::BIKE;
+          break;
+      }
+    } 
+    else {
+      bikeState = signalClassifier.classify(forearmData);
+    }
+  }
+  
+  // Update signal
+
+  switch(mode) {
+    case ModeClassifier::State::BIKE:
+      switch(bikeState) {
+        case SignalClassifier::State::IDLE:
+          Serial.println("Idle signal");
+          ledGrid.setSignal(&idleSignal);
+          break;
+        case SignalClassifier::State::STOP:
+          Serial.println("Brake signal");
+          ledGrid.setSignal(&brakeSignal);
+          break;
+        case SignalClassifier::State::LEFT:
+          Serial.println("Left signal");
+          ledGrid.setSignal(&leftSignal);
+          break;
+        case SignalClassifier::State::RIGHT:
+          Serial.println("Right signal");
+          ledGrid.setSignal(&rightSignal);
+          break;
+      }
+      break;
+    case ModeClassifier::State::MUSIC:
+#ifndef EXCLUSE_MUSIC
+      ledGrid.setSignal(&musicSignal);
+#endif
+      break;
   }
 }
-
-
-
-void updateBike() {
-  switch(bikeState) {
-    case SignalClassifier::State::IDLE:
-      ledGrid.setSignal(&idleSignal);
-      break;
-    case SignalClassifier::State::STOP:
-      ledGrid.setSignal(&brakeSignal);
-      break;
-    case SignalClassifier::State::LEFT:
-      ledGrid.setSignal(&leftSignal);
-      break;
-    case SignalClassifier::State::RIGHT:
-      ledGrid.setSignal(&rightSignal);
-      break;
-  }
-}
-
-void updateMusic() {
-  ledGrid.setSignal(&musicSignal);
-}
-
 
 void actuate() {
   ledGrid.refresh();
@@ -278,8 +290,8 @@ void actuate() {
 
 void loop() {
   sense();
-  detect();
-  //actuate();
+  analyze();
+  actuate();
 
   delay(DELAY);
 }

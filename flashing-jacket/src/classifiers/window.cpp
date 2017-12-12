@@ -10,7 +10,7 @@ Window::Window(uint8_t size) {
 }
 
 void Window::push(float *point) {
-	for (int i = 0; i < mSize - 1; i++) {
+	for (uint8_t i = 0; i < mSize - 1; i++) {
 		memcpy(&(mSample[i * POINT_SIZE]), &(mSample[(i+1) * POINT_SIZE]), POINT_SIZE * sizeof(float));
 	}
 

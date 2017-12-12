@@ -106,11 +106,16 @@ def best_gnb(X, y):
 
 if __name__ == "__main__":
     data_getter = TestDataGetter(10, 9)
-    X = data_getter.get_x_data()
-    y = data_getter.get_y_data()
+    X = data_getter.get_x_data("gesture")
+    y = data_getter.get_y_data("gesture")
     main_dr, main_gnb = best_gnb(X, y)
 
     data_getter = TestDataGetter(10, 9)
-    X = data_getter.get_x_data(False)
-    y = data_getter.get_y_data(False)
+    X = data_getter.get_x_data("switch")
+    y = data_getter.get_y_data("switch")
+    gesture_dr, gesture_gnb = best_gnb(X, y)
+
+    data_getter = TestDataGetter(10, 9)
+    X = data_getter.get_x_data("detector")
+    y = data_getter.get_y_data("detector")
     gesture_dr, gesture_gnb = best_gnb(X, y)

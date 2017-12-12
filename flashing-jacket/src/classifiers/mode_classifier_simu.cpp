@@ -3,3 +3,8 @@
 ModeClassifierSimu::ModeClassifierSimu(): ModeClassifier() {
 
 }
+
+
+bool ModeClassifierSimu::classify(float *forearmData) {
+	return false;
+}

@@ -7,12 +7,12 @@ SignalClassifier::SignalClassifier(): GnbClassifier(), LDA(),
 }
 
 
-SignalClassifier::State SignalClassifier::classify(float *torsoData, float *armData, float *forearmData) {
-	memcpy(&(newPoint[0]), torsoData, 6 * sizeof(float));
-	memcpy(&(newPoint[6]), armData, 6 * sizeof(float));
-	memcpy(&(newPoint[12]), forearmData, 6 * sizeof(float));
+SignalClassifier::State SignalClassifier::classify(float *forearmData) {
+	//memcpy(&(newPoint[0]), torsoData, 6 * sizeof(float));
+	//memcpy(&(newPoint[6]), armData, 6 * sizeof(float));
+	//memcpy(&(newPoint[12]), forearmData, 6 * sizeof(float));
 
-	mWindow.push(newPoint);
+	mWindow.push(forearmData);
 	transform(mWindow.get(), reducedPoint);
 
 	uint8_t cls = predict(reducedPoint);

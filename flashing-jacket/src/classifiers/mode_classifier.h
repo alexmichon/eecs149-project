@@ -3,18 +3,20 @@
 
 #include "gnb_classifier.h"
 #include "lda.h"
+#include "mode_parameters.h"
+#include "window.h"
 
 class ModeClassifier: GnbClassifier, LDA {
 public:
 
 	typedef enum {
-		NONE,
-		SWITCH
-	} Signal;
+		BIKE,
+		MUSIC
+	} State;
 
 	ModeClassifier();
 
-	virtual Signal classify(float *torsoData, float *armData, float *forearmData);
+	virtual bool classify(float *forearmData);
 
 protected:
 
@@ -28,6 +30,10 @@ protected:
 
 	virtual float getXbar(uint8_t feature) override;
 	virtual float getScaling(uint8_t feature, uint8_t cls) override;
+
+	float newPoint[18];
+	float reducedPoint[MODE_DIMENSIONS];
+	Window mWindow;
 
 };
 

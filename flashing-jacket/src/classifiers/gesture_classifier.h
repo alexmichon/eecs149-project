@@ -11,7 +11,7 @@ public:
 
 	GestureClassifier();
 
-	virtual bool classify(float *imuData, float *armData, float *forearmData);
+	virtual bool classify(float *forearmData);
 
 protected:
 

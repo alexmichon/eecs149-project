@@ -10,7 +10,7 @@ SignalClassifierSimu::SignalClassifierSimu(): SignalClassifier() {
 }
 
 
-SignalClassifier::State SignalClassifierSimu::classify(float *imuData, float *armData, float *forearmData) {
+SignalClassifier::State SignalClassifierSimu::classify(float *forearmData) {
 	if (millis() - mTimer > PERIOD) {
 		mCurrentState = nextState(mCurrentState);
 		mTimer = millis();
