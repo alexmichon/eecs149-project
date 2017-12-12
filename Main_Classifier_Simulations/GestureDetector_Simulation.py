@@ -3,19 +3,25 @@ from DataGetter import DataSpliter
 
 from LDA_PCA_FA_Simulation import DimensionReduction
 from sklearn.naive_bayes import GaussianNB
-from sklearn.discriminant_analysis import  LinearDiscriminantAnalysis
-from Plotter import plot_gst_detector_2D
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+
+
+class GestureDetector(object):
+    """
+    The classifier to determine whether it is a gesture or not.
+    """
+    def __init__(self, X_train, y_train):
+        self.X_train = X_train
+        self.y_train = y_train
+        self.predictor = GaussianNB().fit(X_train, y_train)
+
+    def predict(self, X):
+        return self.predictor.predict(X)
 
 def gnb_detector(X_train, y_train, X_test, y_test):
-    gnb = GaussianNB()
-    y_pred = gnb.fit(X_train, y_train).predict(X_test)
-    print("GBN - Percentage of mislabeled points: %d%%" % ((y_test != y_pred).sum()/X_test.shape[0] *100))
-
-def lda_detector(X_train, y_train, X_test, y_test):
-    clf = LinearDiscriminantAnalysis()
-    clf.fit(X_train, y_train)
-    y_pred = clf.predict(X_test)
-    print("LDA - Percentage of mislabeled points: %d%%" % ((y_test != y_pred).sum() / X_test.shape[0] * 100))
+    gesture_detector = GestureDetector(X_train, y_train)
+    y_pred = gesture_detector.predict(X_test)
+    print("GBN - Percentage of mislabeled points: %d%%" % ((y_test != y_pred).sum() / X_test.shape[0] * 100))
 
 def main():
     # Get Data
@@ -35,8 +41,7 @@ def main():
     # Gaussian Naive Bayes Classifier
 
     gnb_detector(X_reduced_train, y_train, X_reduced_test, y_test)
-    lda_detector(X_reduced_train, y_train, X_reduced_test, y_test)
+
 
 if __name__ == "__main__":
-    # stuff only to run when not called via 'import' here
     main()
