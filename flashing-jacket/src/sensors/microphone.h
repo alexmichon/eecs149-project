@@ -9,11 +9,11 @@
 
 class Microphone {
 public:
-	Microphone(int fftSize, int nbBins, int maxHeights);
+	Microphone(int fftSize, uint8_t nbBins, uint8_t maxHeights);
 
 	bool available();
 	void begin(int sampleRate);
-	void read(int *amplitudes);
+	void read(uint8_t *amplitudes);
 
 private:
 	FFTAnalyzer * mFftAnalyzer;
@@ -21,15 +21,15 @@ private:
 	int mSpectrumSize;
 	int *mSpectrum;
 
-	int mNbBins;
-	int mMaxHeight;
+	uint8_t mNbBins;
+	uint8_t mMaxHeight;
 	double *mMagnitudes;
 
-	int mNbPerBin;
-	int *mCounters;
+	uint8_t mNbPerBin;
+	uint8_t *mCounters;
 
 	double *mHistory[HISTORY_SIZE];
-	int mHistoryIndex;
+	uint16_t mHistoryIndex;
 
 	int freqToBin(int freqIndex);
 };

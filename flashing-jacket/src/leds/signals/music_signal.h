@@ -6,15 +6,15 @@
 
 class MusicSignal: public Signal {
 public:
-	MusicSignal(int nbRows, int nbColumns, Microphone * microphone);
+	MusicSignal(uint8_t nbRows, uint8_t nbColumns, Microphone * microphone);
 
 	virtual void refresh() override;
-	virtual uint32_t getColor(int index) override;
+	virtual uint32_t getColor(uint16_t index) override;
 
 protected:
 	Microphone * mMicrophone;
 
-	int *mLastHeights;
+	uint8_t *mLastHeights;
 
 };
 

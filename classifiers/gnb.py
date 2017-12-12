@@ -108,4 +108,9 @@ if __name__ == "__main__":
     data_getter = TestDataGetter(5, 4)
     X = data_getter.get_x_data()
     y = data_getter.get_y_data()
-    dr, gnb = best_gnb(X, y)
+    main_dr, main_gnb = best_gnb(X, y)
+
+    data_getter = TestDataGetter(5, 4)
+    X = data_getter.get_x_data(False)
+    y = data_getter.get_y_data(False)
+    gesture_dr, gesture_gnb = best_gnb(X, y)

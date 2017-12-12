@@ -1,26 +1,25 @@
 #ifndef GNB_CLASSIFIER_H
 #define GNB_CLASSIFIER_H
 
-#include <float.h>
-#include <math.h>
+#include <stdint.h>
 
 class GnbClassifier {
 
 public:
 	GnbClassifier();
 
-	int predict(const float *point);
+	uint8_t predict(const float *point);
 
 protected:
 
-	virtual int getNbClasses() = 0;
-	virtual int getNbDims() = 0;
+	virtual uint8_t getNbClasses() = 0;
+	virtual uint8_t getNbDims() = 0;
 
-	virtual float getClassPrior(int cls) = 0;
-	virtual float getMean(int cls, int dim) = 0;
-	virtual float getStdev(int cls, int dim) = 0;
+	virtual float getClassPrior(uint8_t cls) = 0;
+	virtual float getMean(uint8_t cls, uint8_t dim) = 0;
+	virtual float getStdev(uint8_t cls, uint8_t dim) = 0;
 	
-	float logLikelihood(const int cls, const float *point);
+	float logLikelihood(const uint8_t cls, const float *point);
 
 };
 

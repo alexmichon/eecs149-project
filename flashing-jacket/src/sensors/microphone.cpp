@@ -1,7 +1,7 @@
 #include "microphone.h"
 #include <math.h>
 
-Microphone::Microphone(int fftSize, int nbBins, int maxHeight) {
+Microphone::Microphone(int fftSize, uint8_t nbBins, uint8_t maxHeight) {
   mFftAnalyzer = new FFTAnalyzer(fftSize);
   mSpectrumSize = fftSize / 2;
   mSpectrum = (int *) malloc(sizeof(int) * mSpectrumSize);
@@ -10,7 +10,7 @@ Microphone::Microphone(int fftSize, int nbBins, int maxHeight) {
   mMaxHeight = maxHeight;
   mMagnitudes = (double *) malloc(sizeof(double) * mNbBins);
 
-  mCounters = (int *) malloc(sizeof(int) * mNbBins);
+  mCounters = (uint8_t *) malloc(sizeof(int) * mNbBins);
   mNbPerBin = mSpectrumSize / (mNbBins - 1);
 
   for (int i = 0; i < HISTORY_SIZE; i++) {
@@ -41,7 +41,7 @@ int Microphone::freqToBin(int freqIndex) {
   return freqIndex / mNbPerBin;
 }
 
-void Microphone::read(int *amplitudes) {
+void Microphone::read(uint8_t *amplitudes) {
   // read the new spectrum
   mFftAnalyzer->read(mSpectrum, mSpectrumSize);
 

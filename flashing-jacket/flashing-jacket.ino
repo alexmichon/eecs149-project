@@ -1,5 +1,6 @@
-#include "src/classifiers/main_classifier.h"
+#include "src/classifiers/mode_classifier.h"
 #include "src/classifiers/gesture_classifier.h"
+#include "src/classifiers/signal_classifier.h"
 
 #include "src/leds/led_strip.h"
 #include "src/leds/led_grid.h"
@@ -13,8 +14,8 @@
 #include "src/sensors/microphone.h"
 
 
-// SIMULATION
-#define SIMULATION
+
+#define DELAY 50
 
 
 
@@ -40,12 +41,16 @@
 
 // LEDS
 
+#define SIMULATION_LED
+
+
+
 // Grid
 #define NB_STRIPS 10
 #define NB_LEDS 10
 
 
-#ifndef SIMULATION
+#ifndef SIMULATION_LED
 
 // Leds per strips
 #define NUMPIXELS1      20
@@ -96,10 +101,23 @@ LedGrid ledGrid(ledStrips, NB_STRIPS);
 
 // IMU
 
+#define SIMULATION_IMU
+
+#ifndef SIMULATION_IMU
 
 IMU torsoImu(LSM9DS1_SCK, LSM9DS1_MISO, LSM9DS1_MOSI, LSM9DS1_XGCS1);
 IMU armImu(LSM9DS1_SCK, LSM9DS1_MISO, LSM9DS1_MOSI, LSM9DS1_XGCS2);
 IMU forearmImu(LSM9DS1_SCK, LSM9DS1_MISO, LSM9DS1_MOSI, LSM9DS1_XGCS3);
+
+#else
+
+#include "src/sensors/imu_simu.h"
+
+IMUSimu torsoImu(LSM9DS1_SCK, LSM9DS1_MISO, LSM9DS1_MOSI, LSM9DS1_XGCS1);
+IMUSimu armImu(LSM9DS1_SCK, LSM9DS1_MISO, LSM9DS1_MOSI, LSM9DS1_XGCS2);
+IMUSimu forearmImu(LSM9DS1_SCK, LSM9DS1_MISO, LSM9DS1_MOSI, LSM9DS1_XGCS3);
+
+#endif
 
 IMU::Data torsoData;
 IMU::Data armData;
@@ -139,16 +157,22 @@ MusicSignal musicSignal(NB_STRIPS, NB_LEDS, &microphone);
 
 // CLASSIFIERS
 
+#define SIMULATION_CLASSIFIERS
 
-#ifndef SIMULATION
 
-MainClassifier mainClassifier;
+#ifndef SIMULATION_CLASSIFIERS
+
+ModeClassifier ModeClassifier;
+SignalClassifier signalClassifier;
 GestureClassifier gestureClassifier;
 
 #else
 
-#include "src/classifiers/main_classifier_simu.h"
-MainClassifierSimu mainClassifier;
+#include "src/classifiers/mode_classifier_simu.h"
+ModeClassifierSimu modeClassifier;
+
+#include "src/classifiers/signal_classifier_simu.h"
+SignalClassifierSimu signalClassifier;
 
 #include "src/classifiers/gesture_classifier_simu.h"
 GestureClassifierSimu gestureClassifier;
@@ -156,8 +180,9 @@ GestureClassifierSimu gestureClassifier;
 #endif
 
 
-MainClassifier::State state = MainClassifier::State::MUSIC;
-GestureClassifier::State bikeState = GestureClassifier::State::IDLE;
+ModeClassifier::State mode = ModeClassifier::State::MUSIC;
+bool gesture = false;
+SignalClassifier::State bikeState = SignalClassifier::State::IDLE;
 
 
 
@@ -171,39 +196,61 @@ void setup() {
     ; // wait for serial port to connect. Needed for native USB port only
   }
 
+  torsoImu.begin();
+  delay(10);
+  armImu.begin();
+  delay(10);
+  forearmImu.begin();
+
+  //microphone.begin(SAMPLE_RATE);
   ledGrid.begin();
-  microphone.begin(SAMPLE_RATE);
+  ledGrid.setSignal(&idleSignal);
 }
 
 
 
-void updateSensors() {
+void sense() {
   torsoImu.read(&torsoData);
   armImu.read(&armData);
   forearmImu.read(&forearmData);
 }
 
 
-void updateState() {
-  state = mainClassifier.classify(torsoData, armData, forearmData);
+void analyze() {
+  mode = modeClassifier.classify(torsoData, armData, forearmData);
+
+  switch(mode) {
+    case ModeClassifier::State::BIKE:
+      updateBike();
+      break;
+    case ModeClassifier::State::MUSIC:
+      updateMusic();
+      break;
+  }
 }
 
 
 
 void updateBike() {
-  bikeState = gestureClassifier.getState();
+  gesture = gestureClassifier.classify(torsoData, armData, forearmData);
+  if (gesture) {
+    bikeState = signalClassifier.classify(torsoData, armData, forearmData);
+  }
+  else {
+    bikeState = SignalClassifier::State::IDLE;
+  }
 
   switch(bikeState) {
-    case GestureClassifier::State::IDLE:
+    case SignalClassifier::State::IDLE:
       ledGrid.setSignal(&idleSignal);
       break;
-    case GestureClassifier::State::BRAKE:
+    case SignalClassifier::State::STOP:
       ledGrid.setSignal(&brakeSignal);
       break;
-    case GestureClassifier::State::LEFT:
+    case SignalClassifier::State::LEFT:
       ledGrid.setSignal(&leftSignal);
       break;
-    case GestureClassifier::State::RIGHT:
+    case SignalClassifier::State::RIGHT:
       ledGrid.setSignal(&rightSignal);
       break;
   }
@@ -214,20 +261,15 @@ void updateMusic() {
 }
 
 
-void loop() {
-  updateSensors();
-  updateState();
-
-  switch(state) {
-    case MainClassifier::State::BIKE:
-      updateBike();
-      break;
-    case MainClassifier::State::MUSIC:
-      updateMusic();
-      break;
-  }
-
+void actuate() {
   ledGrid.refresh();
+}
 
-  delay(50);
+
+void loop() {
+  sense();
+  analyze();
+  actuate();
+
+  delay(DELAY);
 }

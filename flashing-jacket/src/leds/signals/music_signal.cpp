@@ -4,8 +4,8 @@
 static uint32_t ON_COLOR = Adafruit_NeoPixel::Color(255, 0, 0);
 static uint32_t OFF_COLOR = Adafruit_NeoPixel::Color(0, 0, 0);
 
-MusicSignal::MusicSignal(int nbRows, int nbColumns, Microphone * microphone): Signal(nbRows, nbColumns), mMicrophone(microphone) {
-	mLastHeights = (int*) malloc(nbRows * sizeof(int));
+MusicSignal::MusicSignal(uint8_t nbRows, uint8_t nbColumns, Microphone * microphone): Signal(nbRows, nbColumns), mMicrophone(microphone) {
+	mLastHeights = (uint8_t*) malloc(nbRows * sizeof(uint8_t));
 }
 
 void MusicSignal::refresh() {
@@ -14,7 +14,7 @@ void MusicSignal::refresh() {
 	}
 }
 
-uint32_t MusicSignal::getColor(int index) {
+uint32_t MusicSignal::getColor(uint16_t index) {
 	if (mLastHeights[getRow(index)] >= getColumn(index)) {
 		return ON_COLOR;
 	}

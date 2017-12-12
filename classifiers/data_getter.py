@@ -62,14 +62,20 @@ class TestDataGetter(object):
 
         if not only_gst_data:
             for i in range(self.X_none.shape[0]):
-                y.append(-1)
-
-        for i in range(self.X_left.shape[0]):
-            y.append(0)
-        for i in range(self.X_right.shape[0]):
-            y.append(1)
-        for i in range(self.X_stop.shape[0]):
-            y.append(2)
+                y.append(1)
+            for i in range(self.X_left.shape[0]):
+                y.append(0)
+            for i in range(self.X_right.shape[0]):
+                y.append(0)
+            for i in range(self.X_stop.shape[0]):
+                y.append(0)
+        else:
+            for i in range(self.X_left.shape[0]):
+                y.append(0)
+            for i in range(self.X_right.shape[0]):
+                y.append(1)
+            for i in range(self.X_stop.shape[0]):
+                y.append(2)
 
         y = np.array(y)
 

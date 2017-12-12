@@ -6,7 +6,7 @@
 
 class LedGrid {
 public:
-	LedGrid(LedStrip **strips, int nbStrips);
+	LedGrid(LedStrip **strips, uint8_t nbStrips);
 
 	virtual void begin();
 
@@ -17,7 +17,7 @@ public:
 
 protected:
 	LedStrip ** mStrips;
-	const int mNbStrips;
+	const uint8_t mNbStrips;
 
 	Signal *mSignal;
 };

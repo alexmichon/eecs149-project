@@ -5,17 +5,17 @@
 
 class Signal {
 public:
-	Signal(int nbRows, int nbColumns);
+	Signal(uint8_t nbRows, uint8_t nbColumns);
 
 	virtual void refresh() = 0;
-	virtual uint32_t getColor(int index) = 0;
+	virtual uint32_t getColor(uint16_t index) = 0;
+
+	const uint8_t mNbRows;
+	const uint8_t mNbColumns;
 
 protected:
-	int getRow(int index);
-	int getColumn(int index);
-
-	const int mNbRows;
-	const int mNbColumns;
+	uint8_t getRow(uint16_t index);
+	uint8_t getColumn(uint16_t index);
 
 };
 

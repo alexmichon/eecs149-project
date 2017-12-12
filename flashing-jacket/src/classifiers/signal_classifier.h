@@ -1,16 +1,22 @@
-#ifndef GESTURE_CLASSIFIER_H
-#define GESTURE_CLASSIFIER_H
+#ifndef SIGNAL_CLASSIFIER_H
+#define SIGNAL_CLASSIFIER_H
 
-#include "gesture_parameters.h"
+#include "signal_parameters.h"
 #include "gnb_classifier.h"
 #include "lda.h"
 
-class GestureClassifier: public GnbClassifier, public LDA {
+class SignalClassifier: public GnbClassifier, public LDA {
 public:
+	typedef enum {
+		IDLE,
+		LEFT,
+		RIGHT,
+		STOP
+	} State;
 
-	GestureClassifier();
+	SignalClassifier();
 
-	virtual bool classify(float *imuData, float *armData, float *forearmData);
+	virtual State classify(float *imuData, float *armData, float *forearmData);
 
 protected:
 
@@ -26,7 +32,7 @@ protected:
 	virtual float getScaling(uint8_t feature, uint8_t cls) override;
 
 	float fullPoint[18];
-	float reducedPoint[GESTURE_DIMENSIONS];
+	float reducedPoint[SIGNAL_DIMENSIONS];
 };
 
 #endif

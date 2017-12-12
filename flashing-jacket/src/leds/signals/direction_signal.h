@@ -5,24 +5,24 @@
 
 class DirectionSignal: public Signal {
 public:
-	DirectionSignal(int nbRows, int nbColumns, int direction);
+	DirectionSignal(uint8_t nbRows, uint8_t nbColumns, int8_t direction);
 
 	virtual void refresh() override;
-	virtual uint32_t getColor(int index) override;
+	virtual uint32_t getColor(uint16_t index) override;
+	const int8_t mDirection;
 
 private:
-	const int mDirection;
-	int mCounter;
+	uint8_t mCounter;
 };
 
 class LeftSignal: public DirectionSignal {
 public:
-	LeftSignal(int nbRows, int nbColumns): DirectionSignal(nbRows, nbColumns, 1) {}
+	LeftSignal(uint8_t nbRows, uint8_t nbColumns): DirectionSignal(nbRows, nbColumns, 1) {}
 };
 
 class RightSignal: public DirectionSignal {
 public:
-	RightSignal(int nbRows, int nbColumns): DirectionSignal(nbRows, nbColumns, -1) {}
+	RightSignal(uint8_t nbRows, uint8_t nbColumns): DirectionSignal(nbRows, nbColumns, -1) {}
 };
 
 #endif

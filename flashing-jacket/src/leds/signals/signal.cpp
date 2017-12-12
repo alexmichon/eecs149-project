@@ -1,15 +1,15 @@
 #include "signal.h"
 
-Signal::Signal(int nbRows, int nbColumns):
+Signal::Signal(uint8_t nbRows, uint8_t nbColumns):
 	mNbRows(nbRows),
 	mNbColumns(nbColumns) {
 
 }
 
-int Signal::getRow(int index) {
+uint8_t Signal::getRow(uint16_t index) {
 	return index / mNbColumns;
 }
 
-int Signal::getColumn(int index) {
+uint8_t Signal::getColumn(uint16_t index) {
 	return index - getRow(index) * mNbColumns;
 }

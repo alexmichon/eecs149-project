@@ -12,13 +12,15 @@ from sklearn.decomposition import PCA
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.decomposition import FactorAnalysis
 
-BASE_DIR = os.path.join(os.path.dirname(__file__), '../')
+
+CURRENT_DIR = os.path.dirname(__file__) + '/'
+BASE_DIR = os.path.join(CURRENT_DIR, '../')
 
 SRC_DIR = BASE_DIR + 'flashing-jacket/src/'
 TEST_DIR = BASE_DIR + 'test/'
 
 CLASSIFIERS_DIR = SRC_DIR + 'classifiers/'
-TEMPLATE_DIR = CLASSIFIERS_DIR + 'templates/'
+TEMPLATE_DIR = CURRENT_DIR + 'templates/'
 
 TEST_CLASSIFIERS_DIR = TEST_DIR + 'classifiers/'
 TEST_TEMPLATE_DIR = TEST_CLASSIFIERS_DIR + 'templates/'
@@ -78,23 +80,23 @@ def fill_test_template(X, y_predicted, template_path, target_path):
 
 def main():
     getter = data_getter.TestDataGetter(5, 4)
-    X = getter.get_x_data()
-    y = getter.get_y_data()
-    main_dr, main_gnb = gnb.best_gnb(X, y)
+    X = getter.get_x_data(True)
+    y = getter.get_y_data(True)
+    signal_dr, signal_gnb = gnb.best_gnb(X, y)
 
-    if type(main_dr) is not LinearDiscriminantAnalysis:
+    if type(signal_dr) is not LinearDiscriminantAnalysis:
         print("PCA NOT SUPPORTED")
         return
 
     getter = data_getter.TestDataGetter(5, 4)
-    X = getter.get_x_data()
-    y = getter.get_y_data()
+    X = getter.get_x_data(False)
+    y = getter.get_y_data(False)
     gesture_dr, gesture_gnb = gnb.best_gnb(X, y)
 
-    fill_classifier_template(main_dr, main_gnb, TEMPLATE_DIR + 'main_parameters.txt', CLASSIFIERS_DIR + 'main_parameters.h', "MAIN_")
+    fill_classifier_template(signal_dr, signal_gnb, TEMPLATE_DIR + 'signal_parameters.txt', CLASSIFIERS_DIR + 'signal_parameters.h', "SIGNAL_")
     fill_classifier_template(gesture_dr, gesture_gnb, TEMPLATE_DIR + 'gesture_parameters.txt', CLASSIFIERS_DIR + 'gesture_parameters.h', "GESTURE_")
 
-    fill_test_template(X, main_gnb.predict(main_dr.transform(X)), TEST_TEMPLATE_DIR + 'test_points.txt', TEST_CLASSIFIERS_DIR + 'test_points.h')
+    fill_test_template(X, signal_gnb.predict(signal_dr.transform(X)), TEST_TEMPLATE_DIR + 'test_points.txt', TEST_CLASSIFIERS_DIR + 'test_points.h')
 
 if __name__ == "__main__":
   sys.exit(main())
