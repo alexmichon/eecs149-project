@@ -8,13 +8,13 @@ class ModeClassifier: GnbClassifier, LDA {
 public:
 
 	typedef enum {
-		BIKE,
-		MUSIC
-	} State;
+		NONE,
+		SWITCH
+	} Signal;
 
 	ModeClassifier();
 
-	virtual State classify(float *torsoData, float *armData, float *forearmData);
+	virtual Signal classify(float *torsoData, float *armData, float *forearmData);
 
 protected:
 

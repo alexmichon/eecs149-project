@@ -6,7 +6,7 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 
-class GestureDetector(object):
+class SwitchDetector(object):
     """
     The classifier to determine whether it is a gesture or not.
     """
@@ -18,16 +18,16 @@ class GestureDetector(object):
     def predict(self, X):
         return self.predictor.predict(X)
 
-def gnb_detector(X_train, y_train, X_test, y_test):
-    gesture_detector = GestureDetector(X_train, y_train)
-    y_pred = gesture_detector.predict(X_test)
-    print("GBN - Percentage of mislabeled points: %.2f%%" % (float((y_test != y_pred).sum())/X_test.shape[0]*100))
+def switch_detector(X_train, y_train, X_test, y_test):
+    switch_detector = SwitchDetector(X_train, y_train)
+    y_pred = switch_detector.predict(X_test)
+    print("GBN of Switch Detection - Percentage of mislabeled points: %.2f%%" % (float((y_test != y_pred).sum()) / X_test.shape[0]*100))
 
 def main():
     # Get Data
     data_getter = TestDataGetter(10, 9)
-    X = data_getter.get_x_data(used_for="detector")
-    y = data_getter.get_y_data(used_for="detector")
+    X = data_getter.get_x_data(used_for="switch")
+    y = data_getter.get_y_data(used_for="switch")
 
     # Data Spliter
     spliter = DataSpliter(X, y, 0.7, 0, 0.3)
@@ -40,7 +40,7 @@ def main():
 
     # Gaussian Naive Bayes Classifier
 
-    gnb_detector(X_reduced_train, y_train, X_reduced_test, y_test)
+    switch_detector(X_reduced_train, y_train, X_reduced_test, y_test)
 
 
 if __name__ == "__main__":

@@ -33,49 +33,39 @@ class TestDataGetter(object):
         self.X_right = self.__get_x_data_matrix("FinalData/right")
         self.X_stop = self.__get_x_data_matrix("FinalData/stop")
         self.X_none = self.__get_x_data_matrix("FinalData/none")
+        self.X_switch = self.__get_x_data_matrix("FinalData/switch_sweep")
 
 
-    def get_x_data(self, only_gst_data=True):
+    def get_x_data(self, used_for="gesture"):
         """
         Get the x data from the data set by requirement set in the init function
 
-        :param only_gst_data: if set to false, then it will return all the data including non-gesture data
+        :param used_for: can only be one of the 3 values: "detector", "switch", "gesture"
         :return: parsed data matrix
         """
-        if only_gst_data:
-            return np.concatenate((self.X_left, self.X_right, self.X_stop))
+        if used_for == "detector":
+            return np.concatenate((self.X_left, self.X_right, self.X_stop, self.X_switch, self.X_none))
+        elif used_for == "switch":
+            return np.concatenate((self.X_left, self.X_right, self.X_stop, self.X_switch))
         else:
-            return np.concatenate((self.X_none, self.X_left, self.X_right, self.X_stop))
+            return np.concatenate((self.X_left, self.X_right, self.X_stop))
 
-    def get_y_data(self, only_gst_data=True):
+    def get_y_data(self, used_for="gesture"):
         """
         Get the target/y data from the data set by requirement set in the init function
 
-        :param only_gst_data: if set to false, then it will return all the data including non-gesture data
+        :param used_for: can only be one of the 3 values: "detector", "switch", "gesture"
         :return: parsed target class array
         """
         y = []
 
-        if not only_gst_data:
-            for i in range(self.X_none.shape[0]):
-                y.append(-1)
-            for i in range(self.X_left.shape[0]):
-                y.append(0)
-            for i in range(self.X_right.shape[0]):
-                y.append(0)
-            for i in range(self.X_stop.shape[0]):
-                y.append(0)
+        if used_for == "detector":
+            y = np.concatenate((np.full(self.X_left.shape[0] + self.X_right.shape[0] + self.X_stop.shape[0] + self.X_switch.shape[0], 1), np.full(self.X_none.shape[0], 0)))
+        elif used_for == "switch":
+            y = np.concatenate((np.full(self.X_left.shape[0] + self.X_right.shape[0] + self.X_stop.shape[0], 0), np.full(self.X_switch.shape[0], 1)))
         else:
-            for i in range(self.X_left.shape[0]):
-                y.append(0)
-            for i in range(self.X_right.shape[0]):
-                y.append(1)
-            for i in range(self.X_stop.shape[0]):
-                y.append(2)
-
-        y = np.array(y)
-
-        return y
+            y = np.concatenate((np.full(self.X_left.shape[0], 0), np.full(self.X_right.shape[0], 1), np.full(self.X_stop.shape[0], 2)))
+        return np.array(y)
 
     def __get_x_data_matrix(self, file_path):
         print("Getting Data From " + file_path + " ...")

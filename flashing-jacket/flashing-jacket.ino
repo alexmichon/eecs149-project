@@ -179,11 +179,15 @@ GestureClassifierSimu gestureClassifier;
 
 #endif
 
+typedef enum {
+  BIKING,
+  MUSIC
+} MainState;
 
-ModeClassifier::State mode = ModeClassifier::State::MUSIC;
-bool gesture = false;
+ModeClassifier::Signal modeSig = ModeClassifier::Signal::NONE;
+MainState currentState = BIKE;
 SignalClassifier::State bikeState = SignalClassifier::State::IDLE;
-
+bool gesture = false;
 
 
 
@@ -207,7 +211,12 @@ void setup() {
   ledGrid.setSignal(&idleSignal);
 }
 
-
+void update() {
+  if(currentState == BIKE)
+      updateBike();
+    else
+      updateMusic();
+}
 
 void sense() {
   torsoImu.read(&torsoData);
@@ -215,31 +224,32 @@ void sense() {
   forearmImu.read(&forearmData);
 }
 
+void detect() {
+  gesture = gestureClassifier.classify(torsoData, armData, forearmData);
+  
+  if (gesture)
+    analyze();
+  else
+    update();
+}
 
 void analyze() {
-  mode = modeClassifier.classify(torsoData, armData, forearmData);
+  switch = modeClassifier.classify(torsoData, armData, forearmData);
 
-  switch(mode) {
-    case ModeClassifier::State::BIKE:
-      updateBike();
-      break;
-    case ModeClassifier::State::MUSIC:
-      updateMusic();
-      break;
+  if(switch == SWITCH){
+    if(currentState == BIKE)
+      currentState == MUSIC;
+    else
+      currentState == BIKE;
+  } else {
+    bikeState = signalClassifier.classify(torsoData, armData, forearmData);
+    update();
   }
 }
 
 
 
 void updateBike() {
-  gesture = gestureClassifier.classify(torsoData, armData, forearmData);
-  if (gesture) {
-    bikeState = signalClassifier.classify(torsoData, armData, forearmData);
-  }
-  else {
-    bikeState = SignalClassifier::State::IDLE;
-  }
-
   switch(bikeState) {
     case SignalClassifier::State::IDLE:
       ledGrid.setSignal(&idleSignal);
@@ -268,7 +278,7 @@ void actuate() {
 
 void loop() {
   sense();
-  analyze();
+  detect();
   //actuate();
 
   delay(DELAY);
