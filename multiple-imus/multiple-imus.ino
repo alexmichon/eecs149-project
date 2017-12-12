@@ -18,8 +18,8 @@
 
 // Feather: set manually SPI pins
 Adafruit_LSM9DS1 lsm1 = Adafruit_LSM9DS1(LSM9DS1_SCK, LSM9DS1_MISO, LSM9DS1_MOSI, LSM9DS1_XGCS1);
-Adafruit_LSM9DS1 lsm2 = Adafruit_LSM9DS1(LSM9DS1_SCK, LSM9DS1_MISO, LSM9DS1_MOSI, LSM9DS1_XGCS2);
-Adafruit_LSM9DS1 lsm3 = Adafruit_LSM9DS1(LSM9DS1_SCK, LSM9DS1_MISO, LSM9DS1_MOSI, LSM9DS1_XGCS3);
+//Adafruit_LSM9DS1 lsm2 = Adafruit_LSM9DS1(LSM9DS1_SCK, LSM9DS1_MISO, LSM9DS1_MOSI, LSM9DS1_XGCS2);
+//Adafruit_LSM9DS1 lsm3 = Adafruit_LSM9DS1(LSM9DS1_SCK, LSM9DS1_MISO, LSM9DS1_MOSI, LSM9DS1_XGCS3);
 
 // Or hardware SPI! In this case, only CS pins are passed in
 //Adafruit_LSM9DS1 lsm1 = Adafruit_LSM9DS1(LSM9DS1_XGCS1);
@@ -59,30 +59,34 @@ void setup()
   }
   Serial.println("Found LSM9DS1 9DOF 1");
 
-  delay(10); // Keep it or initialization of next IMU fails
-
-  if (!lsm2.begin())
-  {
-    Serial.println("Oops ... unable to initialize the LSM9DS1 2. Check your wiring!");
-    while (1);
-  }
-  Serial.println("Found LSM9DS1 9DOF 2");
-
-  delay(10);
-
-  if (!lsm3.begin())
-  {
-    Serial.println("Oops ... unable to initialize the LSM9DS1 3. Check your wiring!");
-    while (1);
-  }
-  Serial.println("Found LSM9DS1 9DOF 3");
+//  delay(10); // Keep it or initialization of next IMU fails
+//
+//  if (!lsm2.begin())
+//  {
+//    Serial.println("Oops ... unable to initialize the LSM9DS1 2. Check your wiring!");
+//    while (1);
+//  }
+//  Serial.println("Found LSM9DS1 9DOF 2");
+//
+//  delay(10);
+//
+//  if (!lsm3.begin())
+//  {
+//    Serial.println("Oops ... unable to initialize the LSM9DS1 3. Check your wiring!");
+//    while (1);
+//  }
+//  Serial.println("Found LSM9DS1 9DOF 3");
 
   // helper to just set the default scaling we want, see above!
   setupSensor(lsm1);
 
-  delay(10); // Keep it or initialization of next IMU fails
-  
-  setupSensor(lsm2);
+//  delay(10); // Keep it or initialization of next IMU fails
+//  
+//  setupSensor(lsm2);
+//
+//  delay(10);
+//
+//  setupSensor(lsm3);
 }
 
 void loop() 
@@ -104,9 +108,9 @@ void loop()
 //  Serial.println();
 
   /* Get a new sensor event */ 
-  sensors_event_t a2, g2;
-
-  lsm2.getEvent(&a2, &g2); 
+//  sensors_event_t a2, g2;
+//
+//  lsm2.getEvent(&a2, &g2); 
 
 //  Serial.println("Sensor 2");
 //  Serial.print("Accel X: "); Serial.print(a2.acceleration.x); Serial.print(" m/s^2");
@@ -119,9 +123,9 @@ void loop()
 //
 //  Serial.println();
 
-  sensors_event_t a3, g3;
-
-  lsm2.getEvent(&a3, &g3);
+//  sensors_event_t a3, g3;
+//
+//  lsm3.getEvent(&a3, &g3);
 
   Serial.print(a1.acceleration.x);
   Serial.print(",");
@@ -129,36 +133,36 @@ void loop()
   Serial.print(",");
   Serial.print(a1.acceleration.z);
   Serial.print(",");
-  Serial.print(a1.gyro.x);
+  Serial.print(g1.gyro.x);
   Serial.print(",");
-  Serial.print(a1.gyro.y);
+  Serial.print(g1.gyro.y);
   Serial.print(",");
-  Serial.print(a1.gyro.z);
+  Serial.print(g1.gyro.z);
   Serial.print(",");
-  Serial.print(a2.acceleration.x);
-  Serial.print(",");
-  Serial.print(a2.acceleration.y);
-  Serial.print(",");
-  Serial.print(a2.acceleration.z);
-  Serial.print(",");
-  Serial.print(a2.gyro.x);
-  Serial.print(",");
-  Serial.print(a2.gyro.y);
-  Serial.print(",");
-  Serial.print(a2.gyro.z);
-  Serial.print(",");
-  Serial.print(a3.acceleration.x);
-  Serial.print(",");
-  Serial.print(a3.acceleration.y);
-  Serial.print(",");
-  Serial.print(a3.acceleration.z);
-  Serial.print(",");
-  Serial.print(a3.gyro.x);
-  Serial.print(",");
-  Serial.print(a3.gyro.y);
-  Serial.print(",");
-  Serial.print(a3.gyro.z);
-  Serial.print(",");
+//  Serial.print(a2.acceleration.x);
+//  Serial.print(",");
+//  Serial.print(a2.acceleration.y);
+//  Serial.print(",");
+//  Serial.print(a2.acceleration.z);
+//  Serial.print(",");
+//  Serial.print(g2.gyro.x);
+//  Serial.print(",");
+//  Serial.print(g2.gyro.y);
+//  Serial.print(",");
+//  Serial.print(g2.gyro.z);
+//  Serial.print(",");
+//  Serial.print(a3.acceleration.x);
+//  Serial.print(",");
+//  Serial.print(a3.acceleration.y);
+//  Serial.print(",");
+//  Serial.print(a3.acceleration.z);
+//  Serial.print(",");
+//  Serial.print(g3.gyro.x);
+//  Serial.print(",");
+//  Serial.print(g3.gyro.y);
+//  Serial.print(",");
+//  Serial.print(g3.gyro.z);
+//  Serial.print(",");
   Serial.println();
 
   delay(100);
