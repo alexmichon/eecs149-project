@@ -26,7 +26,12 @@ void LedGrid::refresh() {
 		LedStrip *strip = mStrips[i];
 		for (uint16_t j = 0; j < strip->numPixels(); j++) {
 			strip->setPixelColor(j, mSignal->getColor(j + strip->getOffset()));
+			Serial.print(j);
+			Serial.print("\t");
+			Serial.print(strip->getPixelColor(j));
+			Serial.print("\t");
 		}
+		Serial.println();
 		strip->show2();
 	}
 }

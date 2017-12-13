@@ -8,6 +8,6 @@ GestureClassifierSimu::GestureClassifierSimu(): GestureClassifier() {
 }
 
 
-bool GestureClassifierSimu::getState() {
+bool GestureClassifierSimu::classify(float *forearmData) {
 	return true;
 }

@@ -17,7 +17,7 @@ public:
 
 	SignalClassifier();
 
-	virtual State classify(float *imuData, float *armData, float *forearmData);
+	virtual State classify(float *forearmData);
 
 protected:
 
