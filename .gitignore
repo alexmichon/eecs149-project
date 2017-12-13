@@ -56,4 +56,5 @@ fabric.properties
 build*/
 
 # Promela Outputs
-test/state-machine-analysis/**
+test/state-machine-analysis/Switch/*
+!test/state-machine-analysis/Switch/*.pml
