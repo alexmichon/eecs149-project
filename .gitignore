@@ -54,3 +54,6 @@ fabric.properties
 */__pycache__
 
 build*/
+
+# Promela Outputs
+test/state-machine-analysis/**
