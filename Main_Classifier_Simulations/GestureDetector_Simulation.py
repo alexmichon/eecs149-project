@@ -20,16 +20,16 @@ class GestureDetector(object):
 def gnb_detector(X_train, y_train, X_test, y_test):
     gesture_detector = GestureDetector(X_train, y_train)
     y_pred = gesture_detector.predict(X_test)
-    print("GBN - Percentage of mislabeled points: %d%%" % ((y_test != y_pred).sum() / X_test.shape[0] * 100))
+    print("GBN - Percentage of mislabeled points: %.2f%%" % (float((y_test != y_pred).sum())/X_test.shape[0]*100))
 
 def main():
     # Get Data
-    data_getter = TestDataGetter(5, 4)
-    X = data_getter.get_x_data(False)
-    y = data_getter.get_y_data(False)
+    data_getter = TestDataGetter(10, 9)
+    X = data_getter.get_x_data(used_for="detector")
+    y = data_getter.get_y_data(used_for="detector")
 
     # Data Spliter
-    spliter = DataSpliter(X, y, 0.6, 0, 0.4)
+    spliter = DataSpliter(X, y, 0.7, 0, 0.3)
     X_train, y_train = spliter.get_training_set()
     X_test, y_test = spliter.get_testing_set()
 
