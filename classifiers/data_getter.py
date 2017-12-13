@@ -5,7 +5,7 @@ import numpy as np
 import random
 import os
 
-DATA_DIR = '../data/'
+DATA_DIR = '../data/OneData/'
 
 
 class Config(object):
@@ -32,11 +32,11 @@ class TestDataGetter(object):
 
     def __init__(self, batch_size, overlap_size):
         self.config = Config(batch_size, overlap_size)
-        self.X_left = self.__get_x_data_matrix(DATA_DIR + "FinalData/left")
-        self.X_right = self.__get_x_data_matrix(DATA_DIR + "FinalData/right")
-        self.X_stop = self.__get_x_data_matrix(DATA_DIR + "FinalData/stop")
-        self.X_none = self.__get_x_data_matrix(DATA_DIR + "FinalData/none")
-        self.X_switch = self.__get_x_data_matrix(DATA_DIR + "FinalData/switch_sweep")
+        self.X_left = self.__get_x_data_matrix(DATA_DIR + "left")
+        self.X_right = self.__get_x_data_matrix(DATA_DIR + "right")
+        self.X_stop = self.__get_x_data_matrix(DATA_DIR + "stop")
+        self.X_none = self.__get_x_data_matrix(DATA_DIR + "none")
+        # self.X_switch = self.__get_x_data_matrix(DATA_DIR + "FinalData/switch_sweep")
 
 
     def get_x_data(self, used_for):
@@ -46,11 +46,13 @@ class TestDataGetter(object):
         :param used_for: can only be one of the 3 values: "detector", "switch", "gesture"
         :return: parsed data matrix
         """
-        if used_for == "detector":
-            return np.concatenate((self.X_left, self.X_right, self.X_stop, self.X_switch, self.X_none))
-        elif used_for == "switch":
-            return np.concatenate((self.X_left, self.X_right, self.X_stop, self.X_switch))
-        elif used_for == "gesture":
+        if used_for == "gesture":
+            # return np.concatenate((self.X_left, self.X_right, self.X_stop, self.X_switch, self.X_none))
+            return np.concatenate((self.X_left, self.X_right, self.X_stop, self.X_none))
+        elif used_for == "mode":
+            # return np.concatenate((self.X_left, self.X_right, self.X_stop, self.X_switch))
+            return np.concatenate((self.X_left, self.X_right, self.X_stop))
+        elif used_for == "signal":
             return np.concatenate((self.X_left, self.X_right, self.X_stop))
 
     def get_y_data(self, used_for):
@@ -62,11 +64,13 @@ class TestDataGetter(object):
         """
         y = []
 
-        if used_for == "detector":
-            y = np.concatenate((np.full(self.X_left.shape[0] + self.X_right.shape[0] + self.X_stop.shape[0] + self.X_switch.shape[0], 1), np.full(self.X_none.shape[0], 0)))
-        elif used_for == "switch":
-            y = np.concatenate((np.full(self.X_left.shape[0] + self.X_right.shape[0] + self.X_stop.shape[0], 0), np.full(self.X_switch.shape[0], 1)))
-        elif used_for == "gesture":
+        if used_for == "gesture":
+            # y = np.concatenate((np.full(self.X_left.shape[0] + self.X_right.shape[0] + self.X_stop.shape[0] + self.X_switch.shape[0], 1), np.full(self.X_none.shape[0], 0)))
+            y = np.concatenate((np.full(self.X_left.shape[0] + self.X_right.shape[0] + self.X_stop.shape[0], 1), np.full(self.X_none.shape[0], 0)))
+        elif used_for == "mode":
+            # y = np.concatenate((np.full(self.X_left.shape[0] + self.X_right.shape[0] + self.X_stop.shape[0], 0), np.full(self.X_switch.shape[0], 1)))
+            y = np.full(self.X_left.shape[0] + self.X_right.shape[0] + self.X_stop.shape[0], 0)
+        elif used_for == "signal":
             y = np.concatenate((np.full(self.X_left.shape[0], 0), np.full(self.X_right.shape[0], 1), np.full(self.X_stop.shape[0], 2)))
         return np.array(y)
 

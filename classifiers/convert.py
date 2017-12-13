@@ -81,8 +81,8 @@ def fill_test_template(X, y_predicted, template_path, target_path):
 
 def main():
     getter = data_getter.TestDataGetter(10, 9)
-    X = getter.get_x_data("detector")
-    y = getter.get_y_data("detector")
+    X = getter.get_x_data("signal")
+    y = getter.get_y_data("signal")
     signal_dr, signal_gnb = gnb.best_gnb(X, y)
 
     if type(signal_dr) is not LinearDiscriminantAnalysis:
@@ -98,18 +98,18 @@ def main():
         print("PCA NOT SUPPORTED")
         return
 
-    getter = data_getter.TestDataGetter(10, 9)
-    X = getter.get_x_data("switch")
-    y = getter.get_y_data("switch")
-    mode_dr, mode_gnb = gnb.best_gnb(X, y)
+    # getter = data_getter.TestDataGetter(10, 9)
+    # X = getter.get_x_data("switch")
+    # y = getter.get_y_data("switch")
+    # mode_dr, mode_gnb = gnb.best_gnb(X, y)
 
-    if type(mode_dr) is not LinearDiscriminantAnalysis:
-        print("PCA NOT SUPPORTED")
-        return
+    # if type(mode_dr) is not LinearDiscriminantAnalysis:
+    #     print("PCA NOT SUPPORTED")
+    #     return
 
     fill_classifier_template(signal_dr, signal_gnb, 10, TEMPLATE_DIR + 'signal_parameters.txt', CLASSIFIERS_DIR + 'signal_parameters.h', "SIGNAL_")
     fill_classifier_template(gesture_dr, gesture_gnb, 10, TEMPLATE_DIR + 'gesture_parameters.txt', CLASSIFIERS_DIR + 'gesture_parameters.h', "GESTURE_")
-    fill_classifier_template(mode_dr, mode_gnb, 10, TEMPLATE_DIR + 'mode_parameters.txt', CLASSIFIERS_DIR + 'mode_parameters.h', "MODE_")
+    # fill_classifier_template(mode_dr, mode_gnb, 10, TEMPLATE_DIR + 'mode_parameters.txt', CLASSIFIERS_DIR + 'mode_parameters.h', "MODE_")
 
     fill_test_template(X, signal_gnb.predict(signal_dr.transform(X)), TEST_TEMPLATE_DIR + 'test_points.txt', TEST_CLASSIFIERS_DIR + 'test_points.h')
 

@@ -99,12 +99,12 @@ LedGrid ledGrid(ledStrips, NB_STRIPS);
 
 // IMU
 
-//#define SIMULATION_IMU
+// #define SIMULATION_IMU
 
 #ifndef SIMULATION_IMU
 
-IMU torsoImu(LSM9DS1_SCK, LSM9DS1_MISO, LSM9DS1_MOSI, LSM9DS1_XGCS1);
-IMU armImu(LSM9DS1_SCK, LSM9DS1_MISO, LSM9DS1_MOSI, LSM9DS1_XGCS2);
+//IMU torsoImu(LSM9DS1_SCK, LSM9DS1_MISO, LSM9DS1_MOSI, LSM9DS1_XGCS1);
+//IMU armImu(LSM9DS1_SCK, LSM9DS1_MISO, LSM9DS1_MOSI, LSM9DS1_XGCS2);
 IMU forearmImu(LSM9DS1_SCK, LSM9DS1_MISO, LSM9DS1_MOSI, LSM9DS1_XGCS3);
 
 #else
@@ -139,7 +139,7 @@ RightSignal rightSignal(NB_STRIPS, NB_LEDS);
 
 // CLASSIFIERS
 
-#define SIMULATION_CLASSIFIERS
+//#define SIMULATION_CLASSIFIERS
 
 
 #ifndef SIMULATION_CLASSIFIERS
@@ -172,7 +172,7 @@ bool gesture = false;
 
 // MUSIC
 
-//#define EXCLUSE_MUSIC
+#define EXCLUSE_MUSIC
 
 #ifndef EXCLUSE_MUSIC
 
@@ -205,14 +205,18 @@ void setup() {
   // on non-native USB ports
   Serial.begin(115200);
   while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB port only
+    delay(1); // wait for serial port to connect. Needed for native USB port only
   }
 
   //torsoImu.begin();
   delay(10);
   //armImu.begin();
   delay(10);
-  forearmImu.begin();
+  Serial.println("IMU begin");
+  if (!forearmImu.begin()) {
+    Serial.println("Error with IMU");
+  }
+  Serial.println("IMU begin OK");
 
 #ifndef EXCLUSE_MUSIC
   microphone.begin(SAMPLE_RATE);
@@ -251,6 +255,9 @@ void analyze() {
       bikeState = signalClassifier.classify(forearmData);
     }
   }
+  else {
+    bikeState = signalClassifier.classify(forearmData);
+  }
   
   // Update signal
 
@@ -258,19 +265,15 @@ void analyze() {
     case ModeClassifier::State::BIKE:
       switch(bikeState) {
         case SignalClassifier::State::IDLE:
-          Serial.println("Idle signal");
           ledGrid.setSignal(&idleSignal);
           break;
         case SignalClassifier::State::STOP:
-          Serial.println("Brake signal");
           ledGrid.setSignal(&brakeSignal);
           break;
         case SignalClassifier::State::LEFT:
-          Serial.println("Left signal");
           ledGrid.setSignal(&leftSignal);
           break;
         case SignalClassifier::State::RIGHT:
-          Serial.println("Right signal");
           ledGrid.setSignal(&rightSignal);
           break;
       }

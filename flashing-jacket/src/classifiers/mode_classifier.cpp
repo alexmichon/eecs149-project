@@ -12,12 +12,14 @@ bool ModeClassifier::classify(float *forearmData) {
 	// memcpy(&(newPoint[6]), armData, 6 * sizeof(float));
 	// memcpy(&(newPoint[12]), forearmData, 6 * sizeof(float));
 
-	mWindow.push(forearmData);
-	transform(mWindow.get(), reducedPoint);
+	// mWindow.push(forearmData);
+	// transform(mWindow.get(), reducedPoint);
 
-	uint8_t cls = predict(reducedPoint);
+	// uint8_t cls = predict(reducedPoint);
 
-	return (cls == 0);
+	// return (cls == 0);
+
+	return false;
 }
 
 
