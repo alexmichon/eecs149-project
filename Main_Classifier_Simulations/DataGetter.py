@@ -29,11 +29,11 @@ class TestDataGetter(object):
 
     def __init__(self, batch_size, overlap_size):
         self.config = Config(batch_size, overlap_size)
-        self.X_left = self.__get_x_data_matrix("FinalData/left")
-        self.X_right = self.__get_x_data_matrix("FinalData/right")
-        self.X_stop = self.__get_x_data_matrix("FinalData/stop")
-        self.X_none = self.__get_x_data_matrix("FinalData/none")
-        self.X_switch = self.__get_x_data_matrix("FinalData/switch_sweep")
+        self.X_left = self.__get_x_data_matrix("TestData/left")
+        self.X_right = self.__get_x_data_matrix("TestData/right")
+        self.X_stop = self.__get_x_data_matrix("TestData/stop")
+        self.X_none = self.__get_x_data_matrix("TestData/none")
+        # self.X_switch = self.__get_x_data_matrix("FinalData/switch_sweep")
 
 
     def get_x_data(self, used_for="gesture"):

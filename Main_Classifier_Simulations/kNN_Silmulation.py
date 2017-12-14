@@ -104,9 +104,12 @@ def main():
     X_reduced_trian, X_reduced_test = dimred.lda_data()
 
     # K-NN Tester
-    X_test, y_test = spliter.get_testing_set()
-    test_err = test_kNN(X_reduced_trian, y_train, X_reduced_test, y_test, 13)
-    print("Final Test Error: ", test_err)
+    # X_test, y_test = spliter.get_testing_set()
+    # test_err = test_kNN(X_reduced_trian, y_train, X_reduced_test, y_test, 13)
+    # print("Final Test Error: ", test_err)
+
+    # K-NN Ploter
+    plot_kNN(X_reduced_trian, y_train)
 
 if __name__ == "__main__":
     main()

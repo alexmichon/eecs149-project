@@ -49,7 +49,7 @@ def test_dim():
     y = data_getter.get_y_data()
 
     # Shuffle the data and split it
-    spliter = DataSpliter(X, y, 0.7, 0, 0.3)
+    spliter = DataSpliter(X, y, 0.5, 0, 0.5)
     X_train, y_train = spliter.get_training_set()
     X_test, y_test = spliter.get_testing_set()
 
