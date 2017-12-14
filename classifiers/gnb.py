@@ -77,17 +77,17 @@ def best_fa(X, y):
 
 def best_dr(X, y):
     best_dr = None
-    best_score = 0
+    best_score = -1
     
     dr, score = best_lda(X, y)
     if score > best_score:
         best_score = score
         best_dr = dr
 
-    dr, score = best_pca(X, y)
-    if score > best_score:
-        best_score = score
-        best_dr = dr
+    # dr, score = best_pca(X, y)
+    # if score > best_score:
+    #     best_score = score
+    #     best_dr = dr
 
     # dr, score = best_fa(X, y)
     # if score > best_score:
@@ -108,14 +108,14 @@ if __name__ == "__main__":
     data_getter = TestDataGetter(10, 9)
     X = data_getter.get_x_data("gesture")
     y = data_getter.get_y_data("gesture")
-    main_dr, main_gnb = best_gnb(X, y)
-
-    data_getter = TestDataGetter(10, 9)
-    X = data_getter.get_x_data("switch")
-    y = data_getter.get_y_data("switch")
     gesture_dr, gesture_gnb = best_gnb(X, y)
 
     data_getter = TestDataGetter(10, 9)
-    X = data_getter.get_x_data("detector")
-    y = data_getter.get_y_data("detector")
-    gesture_dr, gesture_gnb = best_gnb(X, y)
+    X = data_getter.get_x_data("mode")
+    y = data_getter.get_y_data("mode")
+    mode_dr, mode_gnb = best_gnb(X, y)
+
+    data_getter = TestDataGetter(10, 9)
+    X = data_getter.get_x_data("signal")
+    y = data_getter.get_y_data("signal")
+    signal_dr, signal_gnb = best_gnb(X, y)

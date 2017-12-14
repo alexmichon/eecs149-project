@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#define POINT_SIZE 18
+#define POINT_SIZE 6
 
 class Window {
 

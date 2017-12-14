@@ -17,12 +17,12 @@ private:
 
 class LeftSignal: public DirectionSignal {
 public:
-	LeftSignal(uint8_t nbRows, uint8_t nbColumns): DirectionSignal(nbRows, nbColumns, 1) {}
+	LeftSignal(uint8_t nbRows, uint8_t nbColumns): DirectionSignal(nbRows, nbColumns, -1) {}
 };
 
 class RightSignal: public DirectionSignal {
 public:
-	RightSignal(uint8_t nbRows, uint8_t nbColumns): DirectionSignal(nbRows, nbColumns, -1) {}
+	RightSignal(uint8_t nbRows, uint8_t nbColumns): DirectionSignal(nbRows, nbColumns, 1) {}
 };
 
 #endif

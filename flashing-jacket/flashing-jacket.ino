@@ -13,7 +13,10 @@
 
 
 
-#define DELAY 50
+//#define DEBUG
+
+
+#define DELAY 100
 
 
 
@@ -99,12 +102,12 @@ LedGrid ledGrid(ledStrips, NB_STRIPS);
 
 // IMU
 
-//#define SIMULATION_IMU
+// #define SIMULATION_IMU
 
 #ifndef SIMULATION_IMU
 
-IMU torsoImu(LSM9DS1_SCK, LSM9DS1_MISO, LSM9DS1_MOSI, LSM9DS1_XGCS1);
-IMU armImu(LSM9DS1_SCK, LSM9DS1_MISO, LSM9DS1_MOSI, LSM9DS1_XGCS2);
+//IMU torsoImu(LSM9DS1_SCK, LSM9DS1_MISO, LSM9DS1_MOSI, LSM9DS1_XGCS1);
+//IMU armImu(LSM9DS1_SCK, LSM9DS1_MISO, LSM9DS1_MOSI, LSM9DS1_XGCS2);
 IMU forearmImu(LSM9DS1_SCK, LSM9DS1_MISO, LSM9DS1_MOSI, LSM9DS1_XGCS3);
 
 #else
@@ -139,7 +142,7 @@ RightSignal rightSignal(NB_STRIPS, NB_LEDS);
 
 // CLASSIFIERS
 
-#define SIMULATION_CLASSIFIERS
+//#define SIMULATION_CLASSIFIERS
 
 
 #ifndef SIMULATION_CLASSIFIERS
@@ -161,10 +164,14 @@ GestureClassifierSimu gestureClassifier;
 
 #endif
 
-bool switchMode = false;
-ModeClassifier::State mode = ModeClassifier::State::BIKE;
-SignalClassifier::State bikeState = SignalClassifier::State::IDLE;
+#define SWITCH_PERIOD 2000
+
 bool gesture = false;
+bool switchMode = false;
+uint32_t switchTimer;
+ModeClassifier::State mode = ModeClassifier::State::BIKE;
+
+SignalClassifier::State bikeState = SignalClassifier::State::IDLE;
 
 
 
@@ -172,7 +179,7 @@ bool gesture = false;
 
 // MUSIC
 
-//#define EXCLUSE_MUSIC
+#define EXCLUSE_MUSIC
 
 #ifndef EXCLUSE_MUSIC
 
@@ -205,14 +212,18 @@ void setup() {
   // on non-native USB ports
   Serial.begin(115200);
   while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB port only
+    delay(1); // wait for serial port to connect. Needed for native USB port only
   }
 
   //torsoImu.begin();
   delay(10);
   //armImu.begin();
   delay(10);
-  forearmImu.begin();
+  Serial.println("IMU begin");
+  if (!forearmImu.begin()) {
+    Serial.println("Error with IMU");
+  }
+  Serial.println("IMU begin OK");
 
 #ifndef EXCLUSE_MUSIC
   microphone.begin(SAMPLE_RATE);
@@ -237,47 +248,71 @@ void analyze() {
     switchMode = modeClassifier.classify(forearmData);
 
     if(switchMode){
-      Serial.println("Detected switch");
-      switch(mode) {
-        case ModeClassifier::State::BIKE:
-          mode == ModeClassifier::State::MUSIC;
-          break;
-        case ModeClassifier::State::MUSIC:
-          mode == ModeClassifier::State::BIKE;
-          break;
+      if (millis() - switchTimer >= SWITCH_PERIOD) {
+        Serial.println("Detected switch");
+        switchTimer = millis();
+        switch(mode) {
+          case ModeClassifier::State::BIKE:
+            mode = ModeClassifier::State::MUSIC;
+            break;
+          case ModeClassifier::State::MUSIC:
+            mode = ModeClassifier::State::BIKE;
+            break;
+        }
       }
     } 
     else {
-      bikeState = signalClassifier.classify(forearmData);
+      if (mode == ModeClassifier::State::BIKE) {
+        bikeState = signalClassifier.classify(forearmData);
+      }
     }
+  }
+  else {
+    if (mode == ModeClassifier::State::BIKE) {
+        bikeState = SignalClassifier::State::IDLE;
+      }
   }
   
   // Update signal
 
   switch(mode) {
     case ModeClassifier::State::BIKE:
+#ifdef DEBUG
+      Serial.print("BIKE\t");
+#endif
       switch(bikeState) {
         case SignalClassifier::State::IDLE:
-          Serial.println("Idle signal");
+          Serial.println("Idle");
           ledGrid.setSignal(&idleSignal);
           break;
         case SignalClassifier::State::STOP:
-          Serial.println("Brake signal");
+#ifdef DEBUG
+          Serial.println("Stop");
+#endif
           ledGrid.setSignal(&brakeSignal);
           break;
         case SignalClassifier::State::LEFT:
-          Serial.println("Left signal");
+#ifdef DEBUG
+          Serial.println("Left");
+#endif
           ledGrid.setSignal(&leftSignal);
           break;
         case SignalClassifier::State::RIGHT:
-          Serial.println("Right signal");
+#ifdef DEBUG
+          Serial.println("Right");
+#endif
           ledGrid.setSignal(&rightSignal);
           break;
       }
       break;
     case ModeClassifier::State::MUSIC:
+#ifdef DEBUG
+      Serial.println("MUSIC");
+#endif
 #ifndef EXCLUSE_MUSIC
       ledGrid.setSignal(&musicSignal);
+#else
+      ledGrid.setSignal(NULL);
 #endif
       break;
   }

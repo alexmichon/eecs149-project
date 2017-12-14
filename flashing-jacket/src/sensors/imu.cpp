@@ -6,7 +6,7 @@ IMU::IMU(int sck, int miso, int mosi, int cs): Adafruit_LSM9DS1(sck, miso, mosi,
 
 
 bool IMU::begin() {
-	if (!begin()) {
+	if (!Adafruit_LSM9DS1::begin()) {
 		return false;
 	}
 
