@@ -3,7 +3,6 @@ from DataGetter import DataSpliter
 
 from LDA_PCA_FA_Simulation import DimensionReduction
 from sklearn.naive_bayes import GaussianNB
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 
 class GestureDetector(object):
