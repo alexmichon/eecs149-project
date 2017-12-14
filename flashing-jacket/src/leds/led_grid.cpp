@@ -16,8 +16,11 @@ void LedGrid::begin() {
 
 void LedGrid::refresh() {
 	if (mSignal == NULL) {
-		Serial.println("Signal NULL");
-		return;
+		for (uint8_t i = 0; i < mNbStrips; i++) {
+			LedStrip *strip = mStrips[i];
+			strip->clear();
+			strip->show2();
+		}
 	}
 
 	mSignal->refresh();
@@ -26,12 +29,7 @@ void LedGrid::refresh() {
 		LedStrip *strip = mStrips[i];
 		for (uint16_t j = 0; j < strip->numPixels(); j++) {
 			strip->setPixelColor(j, mSignal->getColor(j + strip->getOffset()));
-			Serial.print(j);
-			Serial.print("\t");
-			Serial.print(strip->getPixelColor(j));
-			Serial.print("\t");
 		}
-		Serial.println();
 		strip->show2();
 	}
 }

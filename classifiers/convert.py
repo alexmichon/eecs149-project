@@ -6,6 +6,8 @@ import sys
 import data_getter
 import gnb
 
+import numpy as np
+
 from string import Template
 
 from sklearn.decomposition import PCA
@@ -59,10 +61,17 @@ def get_gnb_template_values(clf, window, prefix=""):
     
 
 
-def fill_classifier_template(dr, clf, window, template_path, target_path, prefix=""):
+def fill_classifier_template_with_dr(dr, clf, window, template_path, target_path, prefix=""):
     values = {}
     values.update(get_gnb_template_values(clf, window, prefix=prefix))
     values.update(get_lda_template_values(dr, prefix=prefix))
+    fill_template(values, template_path, target_path)
+
+def fill_classifier_template_without_dr(dr, clf, window, template_path, target_path, prefix=""):
+    values = {}
+    values.update(get_lda_template_values(dr, prefix=prefix))
+    values.update(get_gnb_template_values(clf, window, prefix=prefix))
+    values[prefix + 'DIMENSIONS'] = dr.xbar_.shape[0]
     fill_template(values, template_path, target_path)
 
 
@@ -86,7 +95,7 @@ def main():
     signal_dr, signal_gnb = gnb.best_gnb(X, y)
 
     if type(signal_dr) is not LinearDiscriminantAnalysis:
-        print("PCA NOT SUPPORTED")
+        print("ONLY LDA SUPPORTED")
         return
 
     getter = data_getter.TestDataGetter(10, 9)
@@ -95,23 +104,23 @@ def main():
     gesture_dr, gesture_gnb = gnb.best_gnb(X, y)
 
     if type(gesture_dr) is not LinearDiscriminantAnalysis:
-        print("PCA NOT SUPPORTED")
+        print("ONLY LDA SUPPORTED")
         return
 
-    # getter = data_getter.TestDataGetter(10, 9)
-    # X = getter.get_x_data("switch")
-    # y = getter.get_y_data("switch")
-    # mode_dr, mode_gnb = gnb.best_gnb(X, y)
+    getter = data_getter.TestDataGetter(10, 9)
+    X = getter.get_x_data("mode")
+    y = getter.get_y_data("mode")
+    mode_dr, mode_gnb = gnb.best_gnb(X, y)
 
-    # if type(mode_dr) is not LinearDiscriminantAnalysis:
-    #     print("PCA NOT SUPPORTED")
-    #     return
+    if type(mode_dr) is not LinearDiscriminantAnalysis:
+        print("ONLY LDA SUPPORTED")
+        return
 
-    fill_classifier_template(signal_dr, signal_gnb, 10, TEMPLATE_DIR + 'signal_parameters.txt', CLASSIFIERS_DIR + 'signal_parameters.h', "SIGNAL_")
-    fill_classifier_template(gesture_dr, gesture_gnb, 10, TEMPLATE_DIR + 'gesture_parameters.txt', CLASSIFIERS_DIR + 'gesture_parameters.h', "GESTURE_")
-    # fill_classifier_template(mode_dr, mode_gnb, 10, TEMPLATE_DIR + 'mode_parameters.txt', CLASSIFIERS_DIR + 'mode_parameters.h', "MODE_")
+    fill_classifier_template_with_dr(signal_dr, signal_gnb, 10, TEMPLATE_DIR + 'signal_parameters.txt', CLASSIFIERS_DIR + 'signal_parameters.h', "SIGNAL_")
+    fill_classifier_template_with_dr(gesture_dr, gesture_gnb, 10, TEMPLATE_DIR + 'gesture_parameters.txt', CLASSIFIERS_DIR + 'gesture_parameters.h', "GESTURE_")
+    fill_classifier_template_with_dr(mode_dr, mode_gnb, 10, TEMPLATE_DIR + 'mode_parameters.txt', CLASSIFIERS_DIR + 'mode_parameters.h', "MODE_")
 
-    fill_test_template(X, signal_gnb.predict(signal_dr.transform(X)), TEST_TEMPLATE_DIR + 'test_points.txt', TEST_CLASSIFIERS_DIR + 'test_points.h')
+    # fill_test_template(X, signal_gnb.predict(signal_dr.transform(X)), TEST_TEMPLATE_DIR + 'test_points.txt', TEST_CLASSIFIERS_DIR + 'test_points.h')
 
 if __name__ == "__main__":
   sys.exit(main())

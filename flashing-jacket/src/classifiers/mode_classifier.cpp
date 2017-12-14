@@ -1,6 +1,9 @@
 #include "mode_classifier.h"
 #include <string.h>
 
+#define SWITCH_PERIOD 2000
+
+
 ModeClassifier::ModeClassifier(): GnbClassifier(), LDA(),
 	mWindow(Window(MODE_WINDOW))
 {
@@ -17,7 +20,7 @@ bool ModeClassifier::classify(float *forearmData) {
 
 	// uint8_t cls = predict(reducedPoint);
 
-	// return (cls == 0);
+	// return (cls == 1);
 
 	return false;
 }

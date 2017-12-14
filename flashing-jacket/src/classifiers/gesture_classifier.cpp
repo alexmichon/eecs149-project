@@ -17,7 +17,7 @@ bool GestureClassifier::classify(float *forearmData) {
 
 	uint8_t cls = predict(reducedPoint);
 
-	return (cls == 0);
+	return (cls == 1);
 }
 
 
